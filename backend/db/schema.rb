@@ -10,8 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_08_21_140454) do
-  create_table "artisans", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+ActiveRecord::Schema[7.2].define(version: 2026_08_21_140454) do
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
+  create_table "artisans", force: :cascade do |t|
     t.bigint "city_id", null: false
     t.string "name", null: false
     t.text "bio", null: false
@@ -21,7 +24,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_21_140454) do
     t.index ["city_id"], name: "index_artisans_on_city_id"
   end
 
-  create_table "categories", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+  create_table "categories", force: :cascade do |t|
     t.string "name", null: false
     t.string "slug", null: false
     t.text "description"
@@ -31,7 +34,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_21_140454) do
     t.index ["slug"], name: "index_categories_on_slug", unique: true
   end
 
-  create_table "cities", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+  create_table "cities", force: :cascade do |t|
     t.bigint "region_id", null: false
     t.string "name", null: false
     t.datetime "created_at", null: false
@@ -40,7 +43,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_21_140454) do
     t.index ["region_id"], name: "index_cities_on_region_id"
   end
 
-  create_table "countries", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+  create_table "countries", force: :cascade do |t|
     t.bigint "currency_id", null: false
     t.string "name", null: false
     t.string "code", null: false
@@ -52,7 +55,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_21_140454) do
     t.index ["name"], name: "index_countries_on_name", unique: true
   end
 
-  create_table "coupons", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+  create_table "coupons", force: :cascade do |t|
     t.string "code", null: false
     t.string "discount_type", null: false
     t.decimal "discount_value", precision: 12, scale: 2, null: false
@@ -67,7 +70,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_21_140454) do
     t.index ["is_active"], name: "index_coupons_on_is_active"
   end
 
-  create_table "currencies", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+  create_table "currencies", force: :cascade do |t|
     t.string "name", null: false
     t.string "code", null: false
     t.string "symbol", null: false
@@ -78,7 +81,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_21_140454) do
     t.index ["name"], name: "index_currencies_on_name", unique: true
   end
 
-  create_table "customers", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+  create_table "customers", force: :cascade do |t|
     t.string "email", null: false
     t.string "password_digest", null: false
     t.string "first_name", null: false
@@ -92,7 +95,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_21_140454) do
     t.index ["email"], name: "index_customers_on_email", unique: true
   end
 
-  create_table "delivery_zones", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+  create_table "delivery_zones", force: :cascade do |t|
     t.bigint "city_id", null: false
     t.string "name", null: false
     t.decimal "delivery_fee", precision: 12, scale: 2, default: "1000.0", null: false
@@ -103,7 +106,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_21_140454) do
     t.index ["city_id"], name: "index_delivery_zones_on_city_id"
   end
 
-  create_table "order_items", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+  create_table "order_items", force: :cascade do |t|
     t.bigint "order_id", null: false
     t.bigint "product_id", null: false
     t.decimal "quantity", precision: 10, scale: 2, null: false
@@ -116,7 +119,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_21_140454) do
     t.index ["product_id"], name: "index_order_items_on_product_id"
   end
 
-  create_table "order_statuses", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+  create_table "order_statuses", force: :cascade do |t|
     t.string "name", null: false
     t.string "code", null: false
     t.datetime "created_at", null: false
@@ -125,7 +128,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_21_140454) do
     t.index ["name"], name: "index_order_statuses_on_name", unique: true
   end
 
-  create_table "orders", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+  create_table "orders", force: :cascade do |t|
     t.string "order_reference", null: false
     t.bigint "customer_id"
     t.bigint "coupon_id"
@@ -152,7 +155,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_21_140454) do
     t.index ["payment_method_id"], name: "index_orders_on_payment_method_id"
   end
 
-  create_table "payment_methods", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+  create_table "payment_methods", force: :cascade do |t|
     t.string "name", null: false
     t.string "code", null: false
     t.boolean "is_active", default: true, null: false
@@ -162,12 +165,12 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_21_140454) do
     t.index ["name"], name: "index_payment_methods_on_name", unique: true
   end
 
-  create_table "payment_webhooks", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+  create_table "payment_webhooks", force: :cascade do |t|
     t.bigint "payment_method_id", null: false
     t.string "external_transaction_id"
     t.string "request_ip"
-    t.text "headers", size: :long, collation: "utf8mb4_bin"
-    t.text "payload", size: :long, null: false, collation: "utf8mb4_bin"
+    t.json "headers"
+    t.json "payload", null: false
     t.string "status", default: "unprocessed", null: false
     t.text "error_log"
     t.datetime "created_at", null: false
@@ -175,11 +178,9 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_21_140454) do
     t.index ["external_transaction_id"], name: "index_payment_webhooks_on_external_transaction_id"
     t.index ["payment_method_id"], name: "index_payment_webhooks_on_payment_method_id"
     t.index ["status"], name: "index_payment_webhooks_on_status"
-    t.check_constraint "json_valid(`headers`)", name: "headers"
-    t.check_constraint "json_valid(`payload`)", name: "payload"
   end
 
-  create_table "product_images", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+  create_table "product_images", force: :cascade do |t|
     t.bigint "product_id", null: false
     t.string "image_url", null: false
     t.integer "position", default: 0, null: false
@@ -189,7 +190,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_21_140454) do
     t.index ["product_id"], name: "index_product_images_on_product_id"
   end
 
-  create_table "products", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+  create_table "products", force: :cascade do |t|
     t.bigint "category_id", null: false
     t.bigint "unit_id", null: false
     t.bigint "season_id", null: false
@@ -200,7 +201,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_21_140454) do
     t.decimal "price", precision: 12, scale: 2, null: false
     t.string "product_type", null: false
     t.integer "stock_quantity", default: 0, null: false
-    t.text "specifications", size: :long, collation: "utf8mb4_bin"
+    t.json "specifications"
     t.string "image_url"
     t.boolean "is_active", default: true, null: false
     t.datetime "created_at", null: false
@@ -211,10 +212,9 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_21_140454) do
     t.index ["origin_city_id"], name: "index_products_on_origin_city_id"
     t.index ["season_id"], name: "index_products_on_season_id"
     t.index ["unit_id"], name: "index_products_on_unit_id"
-    t.check_constraint "json_valid(`specifications`)", name: "specifications"
   end
 
-  create_table "regions", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+  create_table "regions", force: :cascade do |t|
     t.bigint "country_id", null: false
     t.string "name", null: false
     t.string "code"
@@ -224,7 +224,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_21_140454) do
     t.index ["country_id"], name: "index_regions_on_country_id"
   end
 
-  create_table "seasons", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+  create_table "seasons", force: :cascade do |t|
     t.string "name", null: false
     t.string "code", null: false
     t.boolean "is_active", default: true, null: false
@@ -234,22 +234,21 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_21_140454) do
     t.index ["name"], name: "index_seasons_on_name", unique: true
   end
 
-  create_table "transactions", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+  create_table "transactions", force: :cascade do |t|
     t.bigint "order_id", null: false
     t.bigint "payment_method_id", null: false
     t.string "transaction_reference"
     t.decimal "amount", precision: 12, scale: 2, null: false
     t.string "status", default: "pending", null: false
-    t.text "raw_provider_response", size: :long, collation: "utf8mb4_bin"
+    t.json "raw_provider_response"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["order_id"], name: "index_transactions_on_order_id"
     t.index ["payment_method_id"], name: "index_transactions_on_payment_method_id"
     t.index ["transaction_reference"], name: "index_transactions_on_transaction_reference"
-    t.check_constraint "json_valid(`raw_provider_response`)", name: "raw_provider_response"
   end
 
-  create_table "units", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+  create_table "units", force: :cascade do |t|
     t.string "name", null: false
     t.string "abbreviation", null: false
     t.datetime "created_at", null: false
@@ -258,7 +257,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_21_140454) do
     t.index ["name"], name: "index_units_on_name", unique: true
   end
 
-  create_table "users", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+  create_table "users", force: :cascade do |t|
     t.string "email", null: false
     t.string "password_digest", null: false
     t.string "first_name"
