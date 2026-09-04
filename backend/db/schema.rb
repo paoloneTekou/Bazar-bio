@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_08_21_140454) do
+ActiveRecord::Schema[7.2].define(version: 2026_09_04_152845) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -21,7 +21,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_08_21_140454) do
     t.string "profile_image_url"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "user_id"
     t.index ["city_id"], name: "index_artisans_on_city_id"
+    t.index ["user_id"], name: "index_artisans_on_user_id"
   end
 
   create_table "categories", force: :cascade do |t|
@@ -91,8 +93,11 @@ ActiveRecord::Schema[7.2].define(version: 2026_08_21_140454) do
     t.text "default_delivery_address"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "whatsapp_opt_in", default: true, null: false
+    t.datetime "whatsapp_opt_in_at"
     t.index ["default_delivery_zone_id"], name: "index_customers_on_default_delivery_zone_id"
     t.index ["email"], name: "index_customers_on_email", unique: true
+    t.index ["whatsapp_opt_in"], name: "index_customers_on_whatsapp_opt_in"
   end
 
   create_table "delivery_zones", force: :cascade do |t|
@@ -147,12 +152,14 @@ ActiveRecord::Schema[7.2].define(version: 2026_08_21_140454) do
     t.text "customer_notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "whatsapp_opt_in", default: true, null: false
     t.index ["coupon_id"], name: "index_orders_on_coupon_id"
     t.index ["customer_id"], name: "index_orders_on_customer_id"
     t.index ["delivery_zone_id"], name: "index_orders_on_delivery_zone_id"
     t.index ["order_reference"], name: "index_orders_on_order_reference", unique: true
     t.index ["order_status_id"], name: "index_orders_on_order_status_id"
     t.index ["payment_method_id"], name: "index_orders_on_payment_method_id"
+    t.index ["whatsapp_opt_in"], name: "index_orders_on_whatsapp_opt_in"
   end
 
   create_table "payment_methods", force: :cascade do |t|
@@ -206,9 +213,13 @@ ActiveRecord::Schema[7.2].define(version: 2026_08_21_140454) do
     t.boolean "is_active", default: true, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "last_broadcasted_at"
+    t.boolean "is_featured_drop", default: false, null: false
     t.index ["artisan_id"], name: "index_products_on_artisan_id"
     t.index ["category_id"], name: "index_products_on_category_id"
     t.index ["is_active"], name: "index_products_on_is_active"
+    t.index ["is_featured_drop"], name: "index_products_on_is_featured_drop"
+    t.index ["last_broadcasted_at"], name: "index_products_on_last_broadcasted_at"
     t.index ["origin_city_id"], name: "index_products_on_origin_city_id"
     t.index ["season_id"], name: "index_products_on_season_id"
     t.index ["unit_id"], name: "index_products_on_unit_id"
@@ -269,6 +280,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_08_21_140454) do
   end
 
   add_foreign_key "artisans", "cities"
+  add_foreign_key "artisans", "users"
   add_foreign_key "cities", "regions"
   add_foreign_key "countries", "currencies"
   add_foreign_key "customers", "delivery_zones", column: "default_delivery_zone_id"

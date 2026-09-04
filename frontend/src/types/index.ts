@@ -91,10 +91,11 @@ export interface Order {
     lastName: string;
     phone: string;
     email?: string;
+    whatsappOptIn?: boolean;
   };
   deliveryZone: DeliveryZone;
   deliveryAddress: string;
-  paymentMethod: 'mtn_momo' | 'orange_momo' | 'cash_on_delivery';
+  paymentMethod: 'mtn_momo' | 'orange_momo' | 'cash_on_delivery' | 'card';
   paymentStatus: 'pending' | 'paid' | 'pay_on_delivery';
   orderStatus: 'confirmed' | 'preparing' | 'out_for_delivery' | 'delivered';
   createdAt: string;

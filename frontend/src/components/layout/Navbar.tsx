@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { useLanguage } from '@/context/LanguageContext';
-import { LeafIcon, SearchIcon, ShoppingCartIcon, UserIcon, SparklesIcon, XIcon, ArrowRightIcon } from '@/components/ui/Icons';
+import { LeafIcon, SearchIcon, ShoppingCartIcon, UserIcon, SparklesIcon, XIcon, ArrowRightIcon, WhatsAppIcon } from '@/components/ui/Icons';
 import { PRODUCTS } from '@/lib/data';
 
 export function Navbar() {
@@ -26,10 +26,20 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-40 w-full shadow-xs">
       {/* Top Notice Bar */}
-      <div className="bg-[#1B3A24] text-[#E8EFE9] text-xs py-1.5 px-4 text-center font-medium flex items-center justify-center gap-2">
+      <div className="bg-[#1B3A24] text-[#E8EFE9] text-xs py-1.5 px-4 text-center font-medium flex items-center justify-center gap-2 flex-wrap">
         <span className="inline-block w-2 h-2 rounded-full bg-[#588157] animate-pulse" />
         <span>{t('top_notice')}</span>
         <span className="hidden md:inline text-[#A3C0A6]">{t('top_notice_sub')}</span>
+        <span className="hidden lg:inline text-[#A3C0A6]">|</span>
+        <a
+          href="https://whatsapp.com/channel/0029VaBazarBioYaounde"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hidden lg:inline-flex items-center gap-1 text-[#25D366] hover:underline font-semibold text-[11px]"
+        >
+          <WhatsAppIcon className="w-3.5 h-3.5 text-[#25D366]" />
+          <span>Canal WhatsApp (Alertes 3x/semaine)</span>
+        </a>
       </div>
 
       {/* Main Navbar */}

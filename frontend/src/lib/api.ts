@@ -178,8 +178,9 @@ export interface CreateOrderPayload {
     customer_email?: string;
     delivery_zone_id: number | string;
     delivery_address_details: string;
-    payment_method_code: 'mtn_momo' | 'orange_momo' | 'cash_on_delivery';
+    payment_method_code: 'mtn_momo' | 'orange_momo' | 'cash_on_delivery' | 'card';
     customer_notes?: string;
+    whatsapp_opt_in?: boolean;
   };
   items: {
     product_id: number | string;

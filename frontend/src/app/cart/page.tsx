@@ -7,12 +7,12 @@ import { useLanguage } from '@/context/LanguageContext';
 import {
   ShoppingCartIcon,
   LeafIcon,
+  PackageIcon,
+  UsersIcon,
+  TrashIcon,
   PlusIcon,
   MinusIcon,
-  XIcon,
-  SparklesIcon,
   ArrowRightIcon,
-  ShieldCheckIcon,
 } from '@/components/ui/Icons';
 
 export default function CartPage() {
@@ -22,9 +22,7 @@ export default function CartPage() {
     updateQuantity,
     toggleSubscription,
     clearCart,
-    cartCount,
     cartSubtotal,
-    cartDiscount,
     cartTotal,
     cartImpact,
   } = useCart();
@@ -32,15 +30,15 @@ export default function CartPage() {
 
   if (cartItems.length === 0) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-20 text-center space-y-6">
+      <div className="max-w-4xl mx-auto px-4 py-24 text-center space-y-6">
         <div className="w-20 h-20 rounded-full bg-[#E5EDE6] text-[#3A5A40] flex items-center justify-center mx-auto shadow-xs">
           <ShoppingCartIcon className="w-10 h-10 opacity-70" />
         </div>
         <div className="space-y-2">
-          <h1 className="font-serif-title text-3xl font-bold text-[#1B3A24]">
+          <h1 className="font-serif-title text-3xl sm:text-4xl font-bold text-[#1B3A24]">
             {t('empty_cart')}
           </h1>
-          <p className="text-xs text-[#78716C] max-w-sm mx-auto">
+          <p className="text-xs text-[#78716C] max-w-sm mx-auto leading-relaxed">
             {t('empty_cart_desc')}
           </p>
         </div>
@@ -57,186 +55,233 @@ export default function CartPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
-      
-      {/* Title */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-6 border-b border-[#E7E5E4] gap-4">
-        <div>
-          <h1 className="font-serif-title text-3xl font-bold text-[#1B3A24]">
-            {t('cart_drawer_title')} ({cartCount} {t('col_product')})
-          </h1>
-          <p className="text-xs text-[#78716C]">
-            Emballage 100% sans plastique garanti et transport local optimisé.
-          </p>
-        </div>
-        <button
-          onClick={clearCart}
-          className="text-xs text-[#DC2626] hover:underline font-semibold"
-        >
-          {t('clear_cart')}
-        </button>
+      {/* Title (Matches Figma: "Shopping Cart") */}
+      <div>
+        <h1 className="font-serif-title text-3xl sm:text-4xl font-bold text-[#1B3A24]">
+          Shopping Cart
+        </h1>
       </div>
 
-      {/* Main Grid */}
+      {/* Main Grid: Left Cart Items (8 cols), Right Sidebar Cards (4 cols) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
-        {/* Left: Cart Items (8 cols) */}
+        {/* Left: Cart Items List */}
         <div className="lg:col-span-8 space-y-4">
-          
-          {/* Impact Alert Card */}
-          <div className="bg-[#E5EDE6] p-5 rounded-2xl border border-[#C9DBCB] flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-[#3A5A40] text-white flex items-center justify-center shrink-0">
-                <LeafIcon className="w-5 h-5" />
-              </div>
-              <div>
-                <h4 className="font-bold text-xs text-[#1B3A24]">
-                  {t('impact_box_title')}
-                </h4>
-                <p className="text-xs text-[#2D4732]">
-                  <strong>{cartImpact.totalPlasticGrams}g</strong> {t('plastic_saved_text')} • <strong>{cartImpact.totalCo2Kg}kg</strong> {t('co2_saved_text')} • <strong>{cartImpact.uniqueFarmersCount}</strong> {t('farmers_supported_text')}
-                </p>
-              </div>
-            </div>
-          </div>
+          {cartItems.map((item) => {
+            const linePrice = item.isSubscription
+              ? item.product.price * item.quantity * 0.9
+              : item.product.price * item.quantity;
 
-          {/* List */}
-          <div className="bg-white rounded-2xl border border-[#E7E5E4] divide-y divide-[#F5F5F4] overflow-hidden shadow-xs">
-            {cartItems.map((item) => (
-              <div key={item.product.id} className="p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                
-                <div className="flex items-center gap-4">
-                  <img
-                    src={item.product.imageUrl}
-                    alt={item.product.name}
-                    className="w-16 h-16 rounded-xl object-cover shrink-0"
-                  />
-                  <div>
-                    <h3 className="font-serif-title font-bold text-sm text-[#1C1917]">
-                      {item.product.name}
-                    </h3>
-                    <p className="text-xs text-[#78716C]">
-                      {item.product.originCity} • {item.product.price.toLocaleString()} FCFA / {item.product.unitAbbr}
-                    </p>
-                    {item.isSubscription && (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#3A5A40] bg-[#E5EDE6] px-2 py-0.5 rounded-md mt-1">
-                        <SparklesIcon className="w-3 h-3" />
-                        <span>{t('weekly_sub_badge')}</span>
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between w-full sm:w-auto gap-6">
-                  {/* Quantity */}
-                  <div className="flex items-center border border-[#E7E5E4] rounded-lg bg-[#FAF8F5] p-1">
-                    <button
-                      onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
-                      className="p-1 text-[#57534E] hover:bg-white rounded-md transition-colors"
-                    >
-                      <MinusIcon className="w-3.5 h-3.5" />
-                    </button>
-                    <span className="px-3 text-xs font-bold text-[#1C1917]">{item.quantity}</span>
-                    <button
-                      onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
-                      className="p-1 text-[#57534E] hover:bg-white rounded-md transition-colors"
-                    >
-                      <PlusIcon className="w-3.5 h-3.5" />
-                    </button>
+            return (
+              <div
+                key={item.product.id}
+                className="bg-white rounded-2xl border border-[#E7E5E4] p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 shadow-xs hover:border-[#3A5A40]/30 transition-all"
+              >
+                {/* Product Thumbnail & Details */}
+                <div className="flex items-start sm:items-center gap-4 flex-1">
+                  <div className="w-20 h-20 rounded-xl overflow-hidden bg-[#FAF8F5] border border-[#E7E5E4] shrink-0">
+                    <img
+                      src={item.product.imageUrl}
+                      alt={item.product.name}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
 
-                  {/* Line Price */}
-                  <div className="text-right min-w-[100px]">
-                    {item.isSubscription ? (
+                  <div className="space-y-1.5 flex-1">
+                    <div className="flex items-start justify-between sm:justify-start gap-2">
                       <div>
-                        <span className="text-xs line-through text-[#A8A29E] block">
-                          {(item.product.price * item.quantity).toLocaleString()} FCFA
-                        </span>
-                        <span className="text-sm font-bold text-[#3A5A40]">
-                          {(item.product.price * item.quantity * 0.9).toLocaleString()} FCFA
-                        </span>
+                        <h3 className="font-semibold text-base text-[#1C1917] leading-snug">
+                          {item.product.name}
+                        </h3>
+                        <p className="text-xs text-[#78716C]">
+                          {item.product.artisan?.name || item.product.originCity}
+                        </p>
                       </div>
-                    ) : (
-                      <span className="text-sm font-bold text-[#1C1917]">
-                        {(item.product.price * item.quantity).toLocaleString()} FCFA
-                      </span>
-                    )}
-                  </div>
 
-                  {/* Remove */}
-                  <button
-                    onClick={() => removeFromCart(item.product.id)}
-                    className="text-[#A8A29E] hover:text-[#DC2626] p-1 transition-colors"
-                    title="Retirer"
-                  >
-                    <XIcon className="w-4 h-4" />
-                  </button>
+                      {/* Delete button (on mobile view) */}
+                      <button
+                        onClick={() => removeFromCart(item.product.id)}
+                        className="text-[#A8A29E] hover:text-[#DC2626] p-1 sm:hidden transition-colors"
+                        title="Remove"
+                      >
+                        <TrashIcon className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    {/* Subscribe & Save 10% Checkbox */}
+                    {item.product.isSubscriptionEligible && (
+                      <label className="inline-flex items-center gap-2 cursor-pointer pt-1 group">
+                        <input
+                          type="checkbox"
+                          checked={item.isSubscription}
+                          onChange={() => toggleSubscription(item.product.id)}
+                          className="w-4 h-4 rounded border-[#D6D3D1] text-[#3A5A40] focus:ring-[#3A5A40] accent-[#3A5A40]"
+                        />
+                        <span className="text-xs text-[#57534E] group-hover:text-[#1C1917] select-none font-medium">
+                          Subscribe & Save 10%
+                        </span>
+                      </label>
+                    )}
+
+                    {/* Quantity Stepper & Desktop Trash Button */}
+                    <div className="flex items-center gap-4 pt-2">
+                      <div className="inline-flex items-center border border-[#E7E5E4] rounded-lg bg-[#FAF8F5] p-0.5">
+                        <button
+                          onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
+                          className="w-7 h-7 flex items-center justify-center text-[#57534E] hover:bg-white rounded transition-colors"
+                          aria-label="Decrease quantity"
+                        >
+                          <MinusIcon className="w-3.5 h-3.5" />
+                        </button>
+                        <span className="w-8 text-center text-xs font-bold text-[#1C1917]">
+                          {item.quantity}
+                        </span>
+                        <button
+                          onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
+                          className="w-7 h-7 flex items-center justify-center text-[#57534E] hover:bg-white rounded transition-colors"
+                          aria-label="Increase quantity"
+                        >
+                          <PlusIcon className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+
+                      {/* Desktop Delete button */}
+                      <button
+                        onClick={() => removeFromCart(item.product.id)}
+                        className="hidden sm:inline-flex text-[#A8A29E] hover:text-[#DC2626] p-1.5 rounded-lg hover:bg-[#FAF8F5] transition-colors"
+                        title="Remove"
+                      >
+                        <TrashIcon className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
                 </div>
 
+                {/* Line Price Aligned to Right */}
+                <div className="text-right sm:self-center w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-[#F5F5F4]">
+                  <span className="text-lg font-bold text-[#1C1917]">
+                    {linePrice.toLocaleString()} FCFA
+                  </span>
+                  {item.isSubscription && (
+                    <span className="block text-[11px] text-[#3A5A40] font-medium">
+                      -10% weekly subscription
+                    </span>
+                  )}
+                </div>
               </div>
-            ))}
-          </div>
+            );
+          })}
 
+          {/* Clear Cart Link */}
           <div className="pt-2">
-            <Link
-              href="/products"
-              className="text-xs font-bold text-[#3A5A40] hover:underline inline-flex items-center gap-1"
+            <button
+              onClick={clearCart}
+              className="text-xs text-[#57534E] hover:text-[#DC2626] underline transition-colors"
             >
-              ← Continuer mes achats sur le marché
-            </Link>
+              Clear cart
+            </button>
           </div>
         </div>
 
-        {/* Right: Summary Card (4 cols) */}
-        <div className="lg:col-span-4 bg-white p-6 rounded-2xl border border-[#E7E5E4] shadow-xs space-y-6 sticky top-28">
-          <h2 className="font-serif-title text-lg font-bold text-[#1B3A24]">
-            Récapitulatif de Commande
-          </h2>
+        {/* Right Sidebar: 2 Cards (Your Impact & Order Summary) */}
+        <div className="lg:col-span-4 space-y-6 sticky top-28">
+          
+          {/* Card 1: Your Impact (Matches Figma Screenshot) */}
+          <div className="bg-white rounded-2xl border border-[#E7E5E4] p-6 shadow-xs space-y-5">
+            <h2 className="font-serif-title text-xl font-bold text-[#1B3A24]">
+              Your Impact
+            </h2>
 
-          <div className="space-y-3 text-xs divide-y divide-[#F5F5F4]">
-            <div className="flex justify-between text-[#57534E] pb-2">
-              <span>Articles ({cartCount})</span>
-              <span>{cartSubtotal.toLocaleString()} FCFA</span>
-            </div>
-
-            {cartDiscount > 0 && (
-              <div className="flex justify-between text-[#3A5A40] font-medium py-2">
-                <span>Remise Abonnements (-10%)</span>
-                <span>-{cartDiscount.toLocaleString()} FCFA</span>
+            <div className="space-y-4 text-xs">
+              {/* Plastic Saved */}
+              <div className="flex items-center gap-3.5">
+                <div className="w-10 h-10 rounded-xl bg-[#FAF8F5] text-[#3A5A40] flex items-center justify-center border border-[#E7E5E4]">
+                  <PackageIcon className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="font-bold text-sm text-[#1C1917]">
+                    {cartImpact.totalPlasticGrams}g
+                  </div>
+                  <div className="text-[#78716C]">Plastic Saved</div>
+                </div>
               </div>
-            )}
 
-            <div className="flex justify-between text-[#57534E] py-2">
-              <span>Livraison estimée (Yaoundé)</span>
-              <span>1 500 FCFA</span>
-            </div>
+              {/* CO2 Saved */}
+              <div className="flex items-center gap-3.5">
+                <div className="w-10 h-10 rounded-xl bg-[#FAF8F5] text-[#3A5A40] flex items-center justify-center border border-[#E7E5E4]">
+                  <LeafIcon className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="font-bold text-sm text-[#1C1917]">
+                    {Math.round(cartImpact.totalCo2Kg * 1000)}g
+                  </div>
+                  <div className="text-[#78716C]">CO₂ Saved</div>
+                </div>
+              </div>
 
-            <div className="flex justify-between text-base font-bold text-[#1C1917] pt-3">
-              <span>Total Estimé</span>
-              <span className="text-[#3A5A40]">{(cartTotal + 1500).toLocaleString()} FCFA</span>
+              {/* Local Farmers Supported */}
+              <div className="flex items-center gap-3.5">
+                <div className="w-10 h-10 rounded-xl bg-[#FAF8F5] text-[#3A5A40] flex items-center justify-center border border-[#E7E5E4]">
+                  <UsersIcon className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="font-bold text-sm text-[#1C1917]">
+                    {cartImpact.uniqueFarmersCount}
+                  </div>
+                  <div className="text-[#78716C]">Local Farmers Supported</div>
+                </div>
+              </div>
             </div>
           </div>
 
-          <Link
-            href="/checkout"
-            className="w-full py-3.5 rounded-xl bg-[#3A5A40] hover:bg-[#2D4732] text-white font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-md"
-          >
-            <span>Passer à la commande (3 étapes)</span>
-            <ArrowRightIcon className="w-4 h-4" />
-          </Link>
+          {/* Card 2: Order Summary (Matches Figma Screenshot) */}
+          <div className="bg-white rounded-2xl border border-[#E7E5E4] p-6 shadow-xs space-y-5">
+            <h2 className="font-serif-title text-xl font-bold text-[#1B3A24]">
+              Order Summary
+            </h2>
 
-          <div className="bg-[#FAF8F5] p-3.5 rounded-xl text-[11px] text-[#78716C] space-y-1.5 border border-[#E7E5E4]">
-            <div className="flex items-center gap-1.5 text-[#3A5A40] font-bold">
-              <ShieldCheckIcon className="w-3.5 h-3.5" />
-              <span>Garantie Fraîcheur & Confiance</span>
+            <div className="space-y-3 text-xs">
+              <div className="flex justify-between text-[#57534E]">
+                <span>Subtotal</span>
+                <span className="font-medium text-[#1C1917]">
+                  {cartSubtotal.toLocaleString()} FCFA
+                </span>
+              </div>
+
+              <div className="flex justify-between text-[#57534E]">
+                <span>Shipping</span>
+                <span className="text-[#78716C]">Calculated at checkout</span>
+              </div>
+
+              <div className="border-t border-[#E7E5E4] pt-3 flex justify-between items-baseline">
+                <span className="font-serif-title text-base font-bold text-[#1C1917]">Total</span>
+                <span className="text-xl font-bold text-[#1B3A24]">
+                  {cartTotal.toLocaleString()} FCFA
+                </span>
+              </div>
             </div>
-            <p>
-              Paiement à la livraison par Orange Money, MTN MoMo ou Espèces après vérification de votre panier.
-            </p>
+
+            <Link
+              href="/checkout"
+              className="w-full py-3.5 px-4 rounded-xl bg-[#3A5A40] hover:bg-[#2D4732] text-white font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-md active:scale-[0.98]"
+            >
+              <span>Proceed to Checkout</span>
+              <ArrowRightIcon className="w-4 h-4" />
+            </Link>
+
+            <div className="text-center pt-1">
+              <Link
+                href="/products"
+                className="text-xs text-[#57534E] hover:text-[#1C1917] transition-colors"
+              >
+                Continue Shopping
+              </Link>
+            </div>
           </div>
+
         </div>
 
       </div>
-
     </div>
   );
 }

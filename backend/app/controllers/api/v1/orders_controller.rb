@@ -32,6 +32,7 @@ module Api
             payment_method: payment_method,
             order_status: order_status,
             customer_notes: order_params[:customer_notes],
+            whatsapp_opt_in: order_params[:whatsapp_opt_in].nil? ? true : order_params[:whatsapp_opt_in],
             delivery_fee: delivery_zone.delivery_fee,
             subtotal: 0,
             total_amount: 0
@@ -123,7 +124,8 @@ module Api
           :delivery_address_details,
           :payment_method_id,
           :payment_method_code,
-          :customer_notes
+          :customer_notes,
+          :whatsapp_opt_in
         )
       end
 

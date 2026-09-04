@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
-import { LeafIcon, PhoneIcon, MailIcon, MapPinIcon, ShieldCheckIcon, HeartIcon } from '@/components/ui/Icons';
+import { LeafIcon, PhoneIcon, MailIcon, MapPinIcon, ShieldCheckIcon, HeartIcon, WhatsAppIcon } from '@/components/ui/Icons';
 
 export function Footer() {
   const { locale, setLocale, t } = useLanguage();
@@ -151,6 +151,17 @@ export function Footer() {
               <li className="flex items-center gap-2.5">
                 <MailIcon className="w-4 h-4 text-[#789F7D] shrink-0" />
                 <span>contact@bazar-bio.cm</span>
+              </li>
+              <li className="pt-2">
+                <a
+                  href="https://whatsapp.com/channel/0029VaBazarBioYaounde"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-[#25D366]/15 hover:bg-[#25D366]/25 text-[#25D366] border border-[#25D366]/30 text-xs font-semibold transition-all"
+                >
+                  <WhatsAppIcon className="w-4 h-4 shrink-0" />
+                  <span>Canal WhatsApp (Alertes 3x/semaine)</span>
+                </a>
               </li>
             </ul>
           </div>

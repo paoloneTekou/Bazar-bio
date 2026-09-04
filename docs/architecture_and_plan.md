@@ -1,5 +1,8 @@
 # Bazar-Bio: Project Architecture & Roadmap
 
+> [!IMPORTANT]
+> **Definitive Master Blueprint:** The complete system architecture, workflows, RBAC matrix, curation engine, and phased execution roadmap are maintained in [master_architecture_and_roadmap.md](./master_architecture_and_roadmap.md).
+
 This document outlines the decoupled architectural design and implementation plan for **Bazar-Bio**, a mobile-first organic produce and handcrafted jewelry e-commerce platform in Yaoundé, Cameroon.
 
 ---
@@ -95,3 +98,10 @@ All endpoints output standardized JSON envelopes and appropriate HTTP status cod
 * **Task 4.1:** Build checkout validation forms (name, WhatsApp number, delivery neighborhood selection).
 * **Task 4.2:** Post checkout form payload to `/api/v1/orders`. On success, clear the cart.
 * **Task 4.3:** Generate and redirect to encoded WhatsApp URL with structured template for Cameroonian delivery logistics.
+
+### Phase 5: WhatsApp Channel & 3x Weekly Drop System
+* **Task 5.1:** Update database schema for WhatsApp consent flags on customers and guest orders.
+* **Task 5.2:** Add WhatsApp Channel join badges across header, footer, and checkout confirmation.
+* **Task 5.3:** Implement Rails background digest job (scheduled 3x weekly: Tue, Thu, Sat morning).
+* *(See detailed architecture in [whatsapp_newsletter_and_roles_plan.md](./whatsapp_newsletter_and_roles_plan.md))*
+
