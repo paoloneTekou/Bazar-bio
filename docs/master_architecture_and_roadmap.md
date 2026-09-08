@@ -229,16 +229,85 @@ Bio produce and artisanal creations cannot rely on generic e-commerce assumption
 
 ---
 
-## 🛠️ 8. Phased Technical Implementation Roadmap
+---
+
+## ⚙️ 8. Core E-Commerce Operational Directives & Business Logic
+
+To operate reliably in Yaoundé's local retail and agricultural context, the system enforces the following 7 operational pillars:
+
+### 8.1 Real-Time Stock Depletion & Pessimistic Locking
+* **Over-Selling Prevention:** Orders must use database pessimistic row locking (`product.with_lock`) inside the order creation transaction.
+* **Validation:** If `product.stock_quantity < requested_quantity`, rollback immediately with:  
+  `"Stock insuffisant pour [Produit] (disponible : [X] [Unité])"`.
+* **Depletion:** Automatically decrement `product.decrement!(:stock_quantity, item.quantity)` upon successful order persistence.
+* **Restoration on Cancellation:** If an order transitions to `cancelled`, automatically restore inventory (`product.increment!(:stock_quantity, item.quantity)`).
+
+### 8.2 The Central Hub & Cross-Docking Logistics Model
+* **The Challenge:** A customer cart frequently contains spinach from Mfou, fruits from Obala, and jewelry from Yaoundé. Individual vendor direct-shipping would cause 3 separate delivery fees and courier chaos.
+* **The Standard (Cross-Docking Hub):**
+  * Bazar-Bio operates a central logistics hub in Yaoundé (e.g., Bastos / Melen).
+  * On drop mornings (Tuesday, Thursday, Saturday by 07:00 AM), partner farmers deliver bulk harvest quantities to the hub.
+  * Bazar-Bio quality-inspects produce, packs the unified customer orders in 100% plastic-free kraft/banana leaf packaging, and dispatches a single courier per customer address.
+  * The Vendor Portal (`/vendor`) provides a **"Feuille de Récolte" (Harvest Prep Sheet)** summarizing total bulk units to harvest.
+
+### 8.3 Delivery Cycles, Cut-Off Deadlines & Minimum Cart Threshold
+* **Order Cut-Off Deadlines:**
+  * For Tuesday Harvest $\rightarrow$ Orders close **Monday 18:00 (6:00 PM)**.
+  * For Thursday Harvest $\rightarrow$ Orders close **Wednesday 18:00**.
+  * For Saturday Bio Market $\rightarrow$ Orders close **Friday 18:00**.
+* **Delivery Slots at Checkout:**
+  * Customer selects preferred delivery window:
+    * `[ Matin : 08h30 - 12h00 ]` (Priorité fraîcheur légumes & fruits)
+    * `[ Après-midi : 14h00 - 18h00 ]`
+* **Minimum Order Threshold:**
+  * Minimum cart total of **3 000 FCFA** enforced to guarantee courier economic viability across Yaoundé topography.
+
+### 8.4 Cameroonian Mobile Money Payment Flows (MTN MoMo & Orange Money)
+* **Automated USSD Push (NotchPay / Campay API):**
+  * System triggers a USSD prompt to the customer's phone requesting PIN validation.
+  * Webhook listener receives confirmation and flips `orders.payment_status` from `pending` to `paid`.
+* **Cash on Delivery / MoMo to Courier:**
+  * Customer verifies fresh produce at the gate, then pays cash or transfers via MoMo directly to the courier's phone.
+  * Courier/Admin marks order as `paid` and `delivered` via mobile admin sheet.
+
+### 8.5 5-Stage Order Lifecycle & Event-Driven WhatsApp Alerts
+* **Lifecycle State Machine:**
+  ```
+  [ pending ] ──> [ confirmed ] ──> [ preparing ] ──> [ out_for_delivery ] ──> [ delivered ]
+       │
+       └──> [ cancelled ] (Restores stock automatically!)
+  ```
+* **Automated WhatsApp Dispatches:**
+  * When status reaches `out_for_delivery`: Automated notification with courier contact and landmark confirmation.
+  * When status reaches `delivered`: Confirmation text + invitation to review and return empty consignment jars.
+
+### 8.6 Frictionless Post-Purchase Guest-to-Account Conversion
+* Forcing registration prior to checkout increases cart abandonment by >40% on mobile.
+* **Conversion Flow:**
+  1. Guests checkout seamlessly with Name, Phone, and Neighborhood.
+  2. On `/checkout/success`, the page presents a single field:  
+     `"Créez un mot de passe pour sauvegarder cette adresse et suivre votre commande en temps réel"`
+  3. One tap creates a registered `Customer` record, attaches the order reference, and saves their delivery zone for next time.
+
+### 8.7 Eco-Packaging Consignment & "Garantie Fraîcheur 2h" Policy
+* **Glass Jar Consignment (Consigne Bocaux):**
+  * Honey and pure shea butter in reusable glass jars earn a **300 FCFA credit** when returned during the next delivery.
+* **Garantie Fraîcheur (2-Hour Photo Guarantee):**
+  * Stated clearly on cards and checkout: If any fruit or leafy vegetable is bruised during motorcycle transit, sending a photo via WhatsApp within 2 hours of delivery guarantees immediate replacement or store credit.
+
+---
+
+## 🛠️ 9. Phased Technical Implementation Roadmap
 
 ```
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
 │                        BAZAR-BIO MASTER EXECUTION ROADMAP                              │
 ├────────────────────────────────┬───────────────────────────────────────────────────────┤
-│ PHASE 1: Backend API & Auth    │ • Database migrations for Auth, Roles, and Curation.  │
-│          Core Engine           │ • JWT/Session auth endpoints (`/api/v1/auth/*`).      │
+│ PHASE 1: Backend API, Auth &   │ • Pessimistic row locking & stock decrement logic.    │
+│          Master Data Core      │ • Database migrations for Auth, Roles, and Curation.  │
+│                                │ • JWT/Session auth endpoints (`/api/v1/auth/*`).      │
 │                                │ • Admin CRUD for Units, Categories, Seasons, Coupons. │
-│                                │ • Homepage curation endpoint (`GET /api/v1/homepage`).│
+│                                │ • Curation endpoint (`GET /api/v1/homepage`).         │
 ├────────────────────────────────┼───────────────────────────────────────────────────────┤
 │ PHASE 2: Navigation & Geometry │ • Aligned Header with centered search & clean margins.│
 │          Overhaul (Frontend)   │ • Horizontal Category Navigation sub-bar.             │
@@ -247,20 +316,26 @@ Bio produce and artisanal creations cannot rely on generic e-commerce assumption
 │ PHASE 3: Cart & Marketplace    │ • In-card `[ - Qty + ]` steppers on product cards.    │
 │          Conversion Engine     │ • Interactive sliding Cart Drawer on item add.        │
 │                                │ • Floating mobile cart pill for one-thumb checkout.   │
+│                                │ • Minimum order threshold validation (3 000 FCFA).    │
 ├────────────────────────────────┼───────────────────────────────────────────────────────┤
-│ PHASE 4: Full Checkout &       │ • Coupon validation API & frontend input field.       │
-│          Order Review Step     │ • True Step 3 Order Review (Address, items, totals).  │
+│ PHASE 4: Full Checkout &       │ • Delivery slots (Matin / Après-midi) & cut-off rules.│
+│          Order Review Step     │ • Coupon validation API & frontend input field.       │
+│                                │ • True Step 3 Order Review (Address, items, totals).  │
+│                                │ • Post-checkout 1-click guest-to-customer conversion. │
 │                                │ • Dual WhatsApp confirmation (Courier link + Channel).│
 ├────────────────────────────────┼───────────────────────────────────────────────────────┤
-│ PHASE 5: Dedicated Portals     │ • `/vendor` Portal: Own crop stock toggles & add form.│
-│          (Vendor & Admin)      │ • `/admin` Portal: Vendor onboarding, catalog         │
+│ PHASE 5: Dedicated Portals     │ • `/vendor` Portal: Stock toggles, add crop form,     │
+│          (Vendor & Admin)      │   and "Feuille de Récolte" bulk drop-off sheet.       │
+│                                │ • `/admin` Portal: Vendor onboarding, catalog         │
 │                                │   moderation, delivery zones, coupon creator.         │
 ├────────────────────────────────┼───────────────────────────────────────────────────────┤
 │ PHASE 6: WhatsApp Scheduled    │ • Rails 7.2 Solid Queue recurring job (`0 8 * * 2,4,6`)│
 │          Drop Automation       │   for Tuesday, Thursday, and Saturday morning drops.  │
+│                                │ • Event-driven WhatsApp status triggers (En route).   │
 └────────────────────────────────┴───────────────────────────────────────────────────────┘
 ```
 
 ---
 
 *This master document is maintained in `docs/master_architecture_and_roadmap.md` as the definitive functional specification for the Bazar-Bio engineering team.*
+

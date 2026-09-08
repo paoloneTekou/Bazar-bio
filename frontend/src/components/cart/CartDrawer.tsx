@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
 import { XIcon, PlusIcon, MinusIcon, ShoppingCartIcon, LeafIcon, SparklesIcon, ArrowRightIcon } from '@/components/ui/Icons';
+import { SafeImage } from '@/components/ui/SafeImage';
 
 export function CartDrawer() {
   const {
@@ -90,11 +91,15 @@ export function CartDrawer() {
                   key={item.product.id}
                   className="bg-white p-4 rounded-xl border border-[#E7E5E4] shadow-xs flex gap-3 transition-all hover:border-[#3A5A40]/40"
                 >
-                  <img
-                    src={item.product.imageUrl}
-                    alt={item.product.name}
-                    className="w-18 h-18 rounded-lg object-cover shrink-0"
-                  />
+                  <div className="w-18 h-18 rounded-lg overflow-hidden shrink-0 bg-[#FAF8F5]">
+                    <SafeImage
+                      src={item.product.imageUrl}
+                      alt={item.product.name}
+                      category={item.product.categoryId}
+                      fallbackType={item.product.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                   <div className="flex-1 min-w-0 flex flex-col justify-between">
                     <div>
                       <div className="flex items-start justify-between gap-2">

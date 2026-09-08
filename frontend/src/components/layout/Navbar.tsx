@@ -38,7 +38,7 @@ export function Navbar() {
           className="hidden lg:inline-flex items-center gap-1 text-[#25D366] hover:underline font-semibold text-[11px]"
         >
           <WhatsAppIcon className="w-3.5 h-3.5 text-[#25D366]" />
-          <span>Canal WhatsApp (Alertes 3x/semaine)</span>
+          <span>{t('whatsapp_channel_notice')}</span>
         </a>
       </div>
 

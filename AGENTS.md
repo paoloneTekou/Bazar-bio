@@ -63,3 +63,75 @@ Before declaring any page or component complete, the agent MUST run through this
 - [ ] **Sticky mobile elements:** Are sticky bars (cart pill, bottom CTAs) properly padded?
 - [ ] **Modals & Drawers:** Do popups, menus, and drawers scroll smoothly without clipping on short mobile screens?
 - [ ] **Data Tables:** Are tables responsive or replaced with mobile card lists on small screens?
+
+---
+
+## 🌐 CRITICAL DIRECTIVE 2: 100% BILINGUAL TRANSLATION (ZERO HARDCODED TEXT)
+
+Cameroon is an officially **bilingual nation (French & English)**. Bazar-Bio serves both Francophone and Anglophone consumers, diaspora, and expatriates in Yaoundé.
+
+**EVERY SINGLE USER-FACING TEXT, BUTTON, LABEL, PLACEHOLDER, MODAL, ALERT, AND TOAST MUST BE TRANSLATED.** Absolute prohibition of raw string literals in JSX or TSX code.
+
+### 📐 Translation Coding Standards:
+1. **Hook Usage:** All components must use `const { t } = useLanguage()` from `@/context/LanguageContext`.
+2. **Dual-Language Parity:** Whenever a new key is added, it **MUST be defined in BOTH `translations.fr` AND `translations.en`** in `frontend/src/lib/i18n.ts`.
+3. **Form Placeholders & Accessibility:**
+   ```tsx
+   // ✅ CORRECT:
+   <label>{t('whatsapp_phone_label')}</label>
+   <input placeholder={t('whatsapp_phone_placeholder')} />
+   <p>{t('whatsapp_phone_helper')}</p>
+
+   // ❌ FORBIDDEN: Raw string literals
+   <label>Numéro WhatsApp</label>
+   ```
+4. **Dynamic Interpolation:** Use `t('key', { name: user.name, total: amount })` instead of string concatenation.
+
+### 📋 Agent Pre-Commit Translation Checklist:
+- [ ] **Zero hardcoded text:** Are all strings in JSX wrapped in `t('...')`?
+- [ ] **Bilingual parity:** Does `frontend/src/lib/i18n.ts` contain both French and English for all new keys?
+- [ ] **Inputs & Placeholders:** Are all input placeholders and labels internationalized?
+- [ ] **Tested in both languages:** Does toggling FR/EN update the text seamlessly?
+
+---
+
+## 🖼️ CRITICAL DIRECTIVE 3: CONTEXTUAL DEFAULT IMAGE FALLBACKS (ZERO BROKEN IMAGES)
+
+Over 85% of Bazar-Bio users browse on mobile devices with variable 3G/4G connectivity. Broken image icons, empty gray placeholders, or unrepresentative visuals destroy user trust and damage the visual appeal of organic produce.
+
+**EVERY SINGLE IMAGE MUST HAVE A CONTEXTUAL DEFAULT FALLBACK.** Absolute prohibition of raw `<img>` tags without category-specific fallback handling.
+
+### 📐 Image Coding Standards:
+1. **Always Use `<SafeImage>`:**
+   Replace raw `<img>` tags with `<SafeImage>`:
+   ```tsx
+   import { SafeImage } from '@/components/ui/SafeImage';
+
+   // ✅ CORRECT:
+   <SafeImage
+     src={product.imageUrl}
+     alt={product.name}
+     category={product.categoryId}
+     fallbackType={product.categoryId || product.category}
+     className="w-full h-full object-cover"
+   />
+   ```
+2. **Context-Specific Fallbacks:**
+   The fallback image must explicitly match the subject:
+   - **News / Announcements / Drops:** Loudspeaker / Megaphone banner (`fallbackType="news"`)
+   - **Cassava & Tubers (Manioc, Macabo, etc.):** Cassava root visual (`fallbackType="cassava"`)
+   - **Légumes Bio:** Fresh organic greens (`fallbackType="legumes-bio"`)
+   - **Fruits Tropicaux:** Sun-ripened tropical fruits (`fallbackType="fruits-de-saison"`)
+   - **Épices du Terroir:** Penja pepper / local spices (`fallbackType="epices-et-aromates"`)
+   - **Soins & Cosmétiques:** Shea butter / organic oils (`fallbackType="cosmetiques-naturels"`)
+   - **Artisanat & Bijoux:** Handcrafted jewelry / crafts (`fallbackType="bijoux-artisanaux"`)
+   - **Artisans & Maraîchers:** Authentic farmer / producer portrait (`fallbackType="artisan"`)
+3. **Resilient Two-Tier Safety:**
+   `SafeImage` handles initial missing `src` as well as runtime network failure (`onError`), switching from photographic fallback to an inline vector SVG fallback that works 100% offline.
+
+### 📋 Agent Pre-Commit Image Checklist:
+- [ ] **Zero raw `<img>` tags:** Are all image tags replaced with `<SafeImage>`?
+- [ ] **Contextually accurate:** Does the fallback reflect the exact category (megaphone for news, cassava for tubers, etc.)?
+- [ ] **Resilience verified:** Does the component gracefully render without console errors or broken image icons when `src=""` or network fails?
+
+

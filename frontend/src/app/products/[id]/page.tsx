@@ -21,6 +21,7 @@ import {
   MinusIcon,
   ArrowRightIcon,
 } from '@/components/ui/Icons';
+import { SafeImage } from '@/components/ui/SafeImage';
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -75,9 +76,11 @@ export default function ProductDetailPage() {
         {/* Left: Image Gallery (5 cols) */}
         <div className="lg:col-span-6 space-y-4">
           <div className="relative aspect-4/3 rounded-3xl overflow-hidden bg-white border border-[#E7E5E4] shadow-xs">
-            <img
+            <SafeImage
               src={selectedImage}
               alt={product.name}
+              category={product.categoryId}
+              fallbackType={product.name}
               className="w-full h-full object-cover"
             />
             <div className="absolute top-4 left-4 flex gap-2">
@@ -100,7 +103,13 @@ export default function ProductDetailPage() {
                     selectedImage === img ? 'border-[#3A5A40] scale-95 shadow-xs' : 'border-transparent opacity-70 hover:opacity-100'
                   }`}
                 >
-                  <img src={img} alt="" className="w-full h-full object-cover" />
+                  <SafeImage
+                    src={img}
+                    alt={`${product.name} ${idx + 1}`}
+                    category={product.categoryId}
+                    fallbackType={product.name}
+                    className="w-full h-full object-cover"
+                  />
                 </button>
               ))}
             </div>
@@ -256,9 +265,10 @@ export default function ProductDetailPage() {
 
           {/* Producer Profile Box (Meet the Farmer / Artisan) */}
           <div className="bg-white p-5 rounded-2xl border border-[#E7E5E4] flex items-start gap-4">
-            <img
+            <SafeImage
               src={product.artisan.imageUrl}
               alt={product.artisan.name}
+              fallbackType="artisan"
               className="w-14 h-14 rounded-full object-cover border-2 border-[#3A5A40] shrink-0"
             />
             <div className="space-y-1">

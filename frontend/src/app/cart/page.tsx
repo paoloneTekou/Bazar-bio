@@ -14,6 +14,7 @@ import {
   MinusIcon,
   ArrowRightIcon,
 } from '@/components/ui/Icons';
+import { SafeImage } from '@/components/ui/SafeImage';
 
 export default function CartPage() {
   const {
@@ -80,9 +81,11 @@ export default function CartPage() {
                 {/* Product Thumbnail & Details */}
                 <div className="flex items-start sm:items-center gap-4 flex-1">
                   <div className="w-20 h-20 rounded-xl overflow-hidden bg-[#FAF8F5] border border-[#E7E5E4] shrink-0">
-                    <img
+                    <SafeImage
                       src={item.product.imageUrl}
                       alt={item.product.name}
+                      category={item.product.categoryId}
+                      fallbackType={item.product.name}
                       className="w-full h-full object-cover"
                     />
                   </div>

@@ -160,7 +160,7 @@ export function Footer() {
                   className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-[#25D366]/15 hover:bg-[#25D366]/25 text-[#25D366] border border-[#25D366]/30 text-xs font-semibold transition-all"
                 >
                   <WhatsAppIcon className="w-4 h-4 shrink-0" />
-                  <span>Canal WhatsApp (Alertes 3x/semaine)</span>
+                  <span>{t('whatsapp_channel_notice')}</span>
                 </a>
               </li>
             </ul>

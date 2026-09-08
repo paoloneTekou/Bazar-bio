@@ -273,16 +273,29 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-[#1C1917]">Phone</label>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="text-xs sm:text-sm font-semibold text-[#1C1917] flex items-center gap-1.5">
+                <WhatsAppIcon className="w-4 h-4 text-[#25D366]" />
+                <span>{t('whatsapp_phone_field_label')}</span>
+                <span className="text-[#DC2626] font-bold">*</span>
+              </label>
+              <span className="text-[11px] text-[#588157] font-medium bg-[#E5EDE6] px-2 py-0.5 rounded-md">
+                {t('whatsapp_phone_format_badge')}
+              </span>
+            </div>
             <input
               type="tel"
               required
-              placeholder="+237 654 81 81 21 / +33 1 23 45 67 89"
+              placeholder={t('whatsapp_phone_input_placeholder')}
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className="w-full px-4 py-3 bg-white border border-[#E7E5E4] rounded-xl text-sm text-[#1C1917] placeholder-[#A8A29E] focus:outline-none focus:ring-2 focus:ring-[#3A5A40]/30 focus:border-[#3A5A40]"
+              className="w-full px-4 py-3.5 bg-white border border-[#E7E5E4] rounded-xl text-base text-[#1C1917] placeholder-[#A8A29E] focus:outline-none focus:ring-2 focus:ring-[#3A5A40]/30 focus:border-[#3A5A40] transition-colors"
             />
+            <p className="text-[11px] sm:text-xs text-[#57534E] leading-relaxed flex items-start gap-2 bg-[#FAF8F5] p-3 rounded-xl border border-[#E7E5E4]">
+              <span className="text-sm leading-none shrink-0 mt-0.5">💡</span>
+              <span>{t('whatsapp_phone_helper_box')}</span>
+            </p>
           </div>
 
           {/* WhatsApp 3x Weekly Drop Notification Consent */}
@@ -297,13 +310,13 @@ export default function CheckoutPage() {
               <div className="text-xs text-[#44403C] space-y-0.5">
                 <span className="font-semibold text-[#1C1917] flex flex-wrap items-center gap-1.5">
                   <WhatsAppIcon className="w-3.5 h-3.5 text-[#25D366]" />
-                  <span>Recevoir les alertes récoltes fraîches sur WhatsApp</span>
+                  <span>{t('whatsapp_optin_box_title')}</span>
                   <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 bg-[#E5EDE6] text-[#2D4732] rounded-full">
-                    3x / semaine max
+                    {t('whatsapp_optin_box_badge')}
                   </span>
                 </span>
                 <p className="text-[#78716C] text-[11px] leading-relaxed">
-                  Soyez informé en priorité des récoltes bio du Mardi, Jeudi et Samedi matin (Mfou, Obala, etc.). Zéro spam, désinscription en 1 clic.
+                  {t('whatsapp_optin_box_desc')}
                 </p>
               </div>
             </label>
@@ -530,16 +543,19 @@ export default function CheckoutPage() {
                 </p>
               </div>
 
-              <div className="pt-2">
+              <div className="pt-2 space-y-2">
                 <a
                   href={generateWhatsAppUrl()}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full py-3.5 px-6 rounded-xl bg-[#25D366] hover:bg-[#1EBE5D] text-white font-bold text-xs inline-flex items-center justify-center gap-2 transition-all shadow-md"
+                  className="w-full py-4 px-6 rounded-xl bg-[#25D366] hover:bg-[#1EBE5D] text-white font-bold text-sm inline-flex items-center justify-center gap-2.5 transition-all shadow-md active:scale-[0.99]"
                 >
-                  <WhatsAppIcon className="w-4 h-4 text-white" />
-                  <span>Send Confirmation on WhatsApp</span>
+                  <WhatsAppIcon className="w-5 h-5 text-white shrink-0" />
+                  <span>{t('whatsapp_dispatch_btn_title')}</span>
                 </a>
+                <p className="text-[11px] text-[#57534E]">
+                  {t('whatsapp_dispatch_btn_explainer')} (#<strong>{orderReference}</strong>)
+                </p>
               </div>
 
               {/* WhatsApp Channel Community Card */}
@@ -550,13 +566,13 @@ export default function CheckoutPage() {
                   </div>
                   <div>
                     <div className="text-xs font-bold text-[#1B3A24] flex items-center gap-1.5">
-                      <span>Canal WhatsApp Officiel Bazar-Bio</span>
+                      <span>{t('whatsapp_channel_card_heading')}</span>
                       <span className="text-[9px] bg-[#25D366]/20 text-[#1B3A24] px-1.5 py-0.5 rounded font-bold">
-                        GRATUIT
+                        {t('whatsapp_channel_card_badge')}
                       </span>
                     </div>
                     <p className="text-[11px] text-[#57534E] mt-0.5 leading-relaxed">
-                      Rejoignez notre chaîne WhatsApp pour découvrir les photos des récoltes du matin et les alertes avant rupture de stock (Mardi, Jeudi & Samedi).
+                      {t('whatsapp_channel_card_text')}
                     </p>
                   </div>
                 </div>
@@ -568,7 +584,7 @@ export default function CheckoutPage() {
                   className="w-full py-2.5 px-4 bg-[#FAF8F5] hover:bg-[#E5EDE6] text-[#1B3A24] border border-[#C9DBCB] font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-2"
                 >
                   <SparklesIcon className="w-3.5 h-3.5 text-[#3A5A40]" />
-                  <span>Rejoindre le Canal WhatsApp →</span>
+                  <span>{t('whatsapp_channel_join_action')}</span>
                 </a>
               </div>
 

@@ -6,6 +6,7 @@ import { Product } from '@/types';
 import { useCart } from '@/context/CartContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { CheckIcon, MapPinIcon, LeafIcon, HeartIcon } from '@/components/ui/Icons';
+import { SafeImage } from '@/components/ui/SafeImage';
 
 interface ProductCardProps {
   product: Product;
@@ -37,11 +38,12 @@ export function ProductCard({ product }: ProductCardProps) {
     <div className="group bg-white rounded-2xl border border-[#E7E5E4] overflow-hidden shadow-xs hover:shadow-md hover:border-[#3A5A40]/40 transition-all flex flex-col h-full">
       {/* Image Container */}
       <Link href={`/products/${product.id}`} className="relative aspect-4/3 overflow-hidden bg-[#FAF8F5] block">
-        <img
+        <SafeImage
           src={product.imageUrl}
           alt={product.name}
+          category={product.categoryId}
+          fallbackType={product.name}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-          loading="lazy"
         />
 
         {/* Top-Right Circular Floating Action Badges (Matches Figma Mockup) */}
