@@ -59,7 +59,7 @@ export default function CartPage() {
       {/* Title (Matches Figma: "Shopping Cart") */}
       <div>
         <h1 className="font-serif-title text-3xl sm:text-4xl font-bold text-[#1B3A24]">
-          Shopping Cart
+          {t('cart_page_title')}
         </h1>
       </div>
 
@@ -104,8 +104,8 @@ export default function CartPage() {
                       {/* Delete button (on mobile view) */}
                       <button
                         onClick={() => removeFromCart(item.product.id)}
-                        className="text-[#A8A29E] hover:text-[#DC2626] p-1 sm:hidden transition-colors"
-                        title="Remove"
+                        className="text-[#A8A29E] hover:text-[#DC2626] p-2 sm:hidden transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+                        aria-label="Remove item"
                       >
                         <TrashIcon className="w-4 h-4" />
                       </button>
@@ -113,7 +113,7 @@ export default function CartPage() {
 
                     {/* Subscribe & Save 10% Checkbox */}
                     {item.product.isSubscriptionEligible && (
-                      <label className="inline-flex items-center gap-2 cursor-pointer pt-1 group">
+                      <label className="inline-flex items-center gap-2 cursor-pointer pt-1 group min-h-[32px]">
                         <input
                           type="checkbox"
                           checked={item.isSubscription}
@@ -121,7 +121,7 @@ export default function CartPage() {
                           className="w-4 h-4 rounded border-[#D6D3D1] text-[#3A5A40] focus:ring-[#3A5A40] accent-[#3A5A40]"
                         />
                         <span className="text-xs text-[#57534E] group-hover:text-[#1C1917] select-none font-medium">
-                          Subscribe & Save 10%
+                          {t('cart_subscribe_discount_label')}
                         </span>
                       </label>
                     )}
@@ -131,7 +131,7 @@ export default function CartPage() {
                       <div className="inline-flex items-center border border-[#E7E5E4] rounded-lg bg-[#FAF8F5] p-0.5">
                         <button
                           onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
-                          className="w-7 h-7 flex items-center justify-center text-[#57534E] hover:bg-white rounded transition-colors"
+                          className="w-8 h-8 flex items-center justify-center text-[#57534E] hover:bg-white rounded transition-colors"
                           aria-label="Decrease quantity"
                         >
                           <MinusIcon className="w-3.5 h-3.5" />
@@ -141,7 +141,7 @@ export default function CartPage() {
                         </span>
                         <button
                           onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
-                          className="w-7 h-7 flex items-center justify-center text-[#57534E] hover:bg-white rounded transition-colors"
+                          className="w-8 h-8 flex items-center justify-center text-[#57534E] hover:bg-white rounded transition-colors"
                           aria-label="Increase quantity"
                         >
                           <PlusIcon className="w-3.5 h-3.5" />
@@ -151,8 +151,8 @@ export default function CartPage() {
                       {/* Desktop Delete button */}
                       <button
                         onClick={() => removeFromCart(item.product.id)}
-                        className="hidden sm:inline-flex text-[#A8A29E] hover:text-[#DC2626] p-1.5 rounded-lg hover:bg-[#FAF8F5] transition-colors"
-                        title="Remove"
+                        className="hidden sm:inline-flex text-[#A8A29E] hover:text-[#DC2626] p-2 rounded-lg hover:bg-[#FAF8F5] transition-colors"
+                        aria-label="Remove item"
                       >
                         <TrashIcon className="w-4 h-4" />
                       </button>
@@ -167,7 +167,7 @@ export default function CartPage() {
                   </span>
                   {item.isSubscription && (
                     <span className="block text-[11px] text-[#3A5A40] font-medium">
-                      -10% weekly subscription
+                      {t('cart_weekly_sub_notice')}
                     </span>
                   )}
                 </div>
@@ -179,9 +179,9 @@ export default function CartPage() {
           <div className="pt-2">
             <button
               onClick={clearCart}
-              className="text-xs text-[#57534E] hover:text-[#DC2626] underline transition-colors"
+              className="text-xs text-[#57534E] hover:text-[#DC2626] underline transition-colors py-2"
             >
-              Clear cart
+              {t('cart_empty_button')}
             </button>
           </div>
         </div>
@@ -192,7 +192,7 @@ export default function CartPage() {
           {/* Card 1: Your Impact (Matches Figma Screenshot) */}
           <div className="bg-white rounded-2xl border border-[#E7E5E4] p-6 shadow-xs space-y-5">
             <h2 className="font-serif-title text-xl font-bold text-[#1B3A24]">
-              Your Impact
+              {t('cart_impact_card_title')}
             </h2>
 
             <div className="space-y-4 text-xs">
@@ -205,7 +205,7 @@ export default function CartPage() {
                   <div className="font-bold text-sm text-[#1C1917]">
                     {cartImpact.totalPlasticGrams}g
                   </div>
-                  <div className="text-[#78716C]">Plastic Saved</div>
+                  <div className="text-[#78716C]">{t('cart_impact_plastic')}</div>
                 </div>
               </div>
 
@@ -218,7 +218,7 @@ export default function CartPage() {
                   <div className="font-bold text-sm text-[#1C1917]">
                     {Math.round(cartImpact.totalCo2Kg * 1000)}g
                   </div>
-                  <div className="text-[#78716C]">CO₂ Saved</div>
+                  <div className="text-[#78716C]">{t('cart_impact_co2')}</div>
                 </div>
               </div>
 
@@ -231,7 +231,7 @@ export default function CartPage() {
                   <div className="font-bold text-sm text-[#1C1917]">
                     {cartImpact.uniqueFarmersCount}
                   </div>
-                  <div className="text-[#78716C]">Local Farmers Supported</div>
+                  <div className="text-[#78716C]">{t('cart_impact_farmers')}</div>
                 </div>
               </div>
             </div>
@@ -240,24 +240,24 @@ export default function CartPage() {
           {/* Card 2: Order Summary (Matches Figma Screenshot) */}
           <div className="bg-white rounded-2xl border border-[#E7E5E4] p-6 shadow-xs space-y-5">
             <h2 className="font-serif-title text-xl font-bold text-[#1B3A24]">
-              Order Summary
+              {t('cart_summary_title')}
             </h2>
 
             <div className="space-y-3 text-xs">
               <div className="flex justify-between text-[#57534E]">
-                <span>Subtotal</span>
+                <span>{t('cart_subtotal_row')}</span>
                 <span className="font-medium text-[#1C1917]">
                   {cartSubtotal.toLocaleString()} FCFA
                 </span>
               </div>
 
               <div className="flex justify-between text-[#57534E]">
-                <span>Shipping</span>
-                <span className="text-[#78716C]">Calculated at checkout</span>
+                <span>{t('cart_shipping_row')}</span>
+                <span className="text-[#78716C]">{t('cart_shipping_calc_note')}</span>
               </div>
 
               <div className="border-t border-[#E7E5E4] pt-3 flex justify-between items-baseline">
-                <span className="font-serif-title text-base font-bold text-[#1C1917]">Total</span>
+                <span className="font-serif-title text-base font-bold text-[#1C1917]">{t('cart_total_row')}</span>
                 <span className="text-xl font-bold text-[#1B3A24]">
                   {cartTotal.toLocaleString()} FCFA
                 </span>
@@ -266,18 +266,18 @@ export default function CartPage() {
 
             <Link
               href="/checkout"
-              className="w-full py-3.5 px-4 rounded-xl bg-[#3A5A40] hover:bg-[#2D4732] text-white font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-md active:scale-[0.98]"
+              className="w-full py-4 px-4 rounded-xl bg-[#3A5A40] hover:bg-[#2D4732] text-white font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-md active:scale-[0.98] min-h-[48px]"
             >
-              <span>Proceed to Checkout</span>
+              <span>{t('cart_checkout_cta')}</span>
               <ArrowRightIcon className="w-4 h-4" />
             </Link>
 
             <div className="text-center pt-1">
               <Link
                 href="/products"
-                className="text-xs text-[#57534E] hover:text-[#1C1917] transition-colors"
+                className="text-xs text-[#57534E] hover:text-[#1C1917] transition-colors py-2 inline-block"
               >
-                Continue Shopping
+                {t('cart_continue_cta')}
               </Link>
             </div>
           </div>

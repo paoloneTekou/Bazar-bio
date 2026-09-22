@@ -38,12 +38,19 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     try {
       const savedCart = localStorage.getItem('bazar_bio_cart');
       if (savedCart) {
-        setCartItems(JSON.parse(savedCart));
+        const parsed = JSON.parse(savedCart);
+        queueMicrotask(() => {
+          setCartItems(parsed);
+          setIsHydrated(true);
+        });
+        return;
       }
     } catch (e) {
       console.error('Failed to load cart from localStorage', e);
     }
-    setIsHydrated(true);
+    queueMicrotask(() => {
+      setIsHydrated(true);
+    });
   }, []);
 
   // Save cart to LocalStorage on change

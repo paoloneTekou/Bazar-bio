@@ -13,5 +13,10 @@ class Product < ApplicationRecord
   scope :pending_broadcast, -> {
     active.in_stock.where('last_broadcasted_at IS NULL OR updated_at > last_broadcasted_at OR is_featured_drop = true')
   }
+
+  def unit_label
+    unit&.abbreviation.presence || unit&.name.presence || "unités"
+  end
 end
+
 

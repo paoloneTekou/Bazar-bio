@@ -1,32 +1,29 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { PRODUCTS } from '@/lib/data';
 import { getProductById } from '@/lib/api';
 import { useCart } from '@/context/CartContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { EcoScoreBadge } from '@/components/products/EcoScoreBadge';
 import { Product } from '@/types';
 import {
   LeafIcon,
   MapPinIcon,
-  PackageIcon,
-  ShieldCheckIcon,
-  TruckIcon,
   StarIcon,
   SparklesIcon,
   CheckIcon,
   PlusIcon,
   MinusIcon,
-  ArrowRightIcon,
 } from '@/components/ui/Icons';
 import { SafeImage } from '@/components/ui/SafeImage';
 
 export default function ProductDetailPage() {
   const params = useParams();
-  const router = useRouter();
   const { addToCart } = useCart();
+  const { t } = useLanguage();
 
   const productId = typeof params?.id === 'string' ? params.id : Array.isArray(params?.id) ? params.id[0] : '';
   const initialProduct = PRODUCTS.find((p) => p.id === productId || p.slug === productId) || PRODUCTS[0];
@@ -63,9 +60,9 @@ export default function ProductDetailPage() {
       
       {/* Breadcrumb */}
       <nav className="text-xs text-[#78716C] flex items-center gap-2">
-        <Link href="/" className="hover:text-[#3A5A40]">Accueil</Link>
+        <Link href="/" className="hover:text-[#3A5A40]">{t('breadcrumb_home')}</Link>
         <span>/</span>
-        <Link href="/products" className="hover:text-[#3A5A40]">Marché</Link>
+        <Link href="/products" className="hover:text-[#3A5A40]">{t('breadcrumb_market')}</Link>
         <span>/</span>
         <span className="text-[#1C1917] font-semibold">{product.name}</span>
       </nav>
@@ -88,7 +85,7 @@ export default function ProductDetailPage() {
             </div>
             <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold text-[#1C1917] flex items-center gap-1.5 shadow-xs">
               <MapPinIcon className="w-3.5 h-3.5 text-[#3A5A40]" />
-              <span>{product.originCity} • à {product.distanceKm} km de Yaoundé</span>
+              <span>{product.originCity} • {t('distance_from_yaounde', { distance: product.distanceKm })}</span>
             </div>
           </div>
 
@@ -127,7 +124,7 @@ export default function ProductDetailPage() {
               <div className="flex items-center gap-1 text-[#D97706] text-xs font-bold">
                 <StarIcon className="w-3.5 h-3.5 fill-current" />
                 <span>{product.rating}</span>
-                <span className="text-[#A8A29E] font-normal">({product.reviewsCount} avis)</span>
+                <span className="text-[#A8A29E] font-normal">({product.reviewsCount} {t('reviews_count')})</span>
               </div>
             </div>
 
@@ -153,7 +150,7 @@ export default function ProductDetailPage() {
 
               {isSubscription && (
                 <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-[#E5EDE6] text-[#2D4732]">
-                  -10% appliqué
+                  {t('discount_applied')}
                 </span>
               )}
             </div>
@@ -177,10 +174,10 @@ export default function ProductDetailPage() {
                   <div>
                     <div className="text-xs font-bold flex items-center gap-1.5">
                       <SparklesIcon className="w-3.5 h-3.5 text-[#D97706]" />
-                      <span>S'abonner chaque semaine (Économisez 10%)</span>
+                      <span>{t('subscribe_save_title')}</span>
                     </div>
                     <p className="text-[11px] text-[#78716C]">
-                      Livraison automatique à Yaoundé. Annulable sans frais en 1 clic.
+                      {t('subscribe_save_desc')}
                     </p>
                   </div>
                 </div>
@@ -192,14 +189,16 @@ export default function ProductDetailPage() {
               <div className="flex items-center border border-[#E7E5E4] rounded-xl bg-[#FAF8F5] p-1">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="p-2 text-[#57534E] hover:bg-white rounded-lg transition-colors"
+                  className="min-w-[44px] min-h-[44px] flex items-center justify-center text-[#57534E] hover:bg-white rounded-lg transition-colors"
+                  aria-label="Decrease quantity"
                 >
                   <MinusIcon className="w-4 h-4" />
                 </button>
                 <span className="px-4 text-sm font-bold text-[#1C1917]">{quantity}</span>
                 <button
                   onClick={() => setQuantity(quantity + 1)}
-                  className="p-2 text-[#57534E] hover:bg-white rounded-lg transition-colors"
+                  className="min-w-[44px] min-h-[44px] flex items-center justify-center text-[#57534E] hover:bg-white rounded-lg transition-colors"
+                  aria-label="Increase quantity"
                 >
                   <PlusIcon className="w-4 h-4" />
                 </button>
@@ -208,7 +207,7 @@ export default function ProductDetailPage() {
               <button
                 onClick={handleAddToCart}
                 disabled={isAdded}
-                className={`flex-1 py-3.5 px-6 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-md ${
+                className={`flex-1 min-h-[44px] py-3.5 px-6 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-md ${
                   isAdded
                     ? 'bg-[#2D4732] text-white'
                     : 'bg-[#3A5A40] hover:bg-[#2D4732] text-white hover:scale-[1.02]'
@@ -217,11 +216,11 @@ export default function ProductDetailPage() {
                 {isAdded ? (
                   <>
                     <CheckIcon className="w-4 h-4" />
-                    <span>Ajouté au panier avec succès !</span>
+                    <span>{t('added_success_msg')}</span>
                   </>
                 ) : (
                   <>
-                    <span>Ajouter au panier • {(finalUnitPrice * quantity).toLocaleString()} FCFA</span>
+                    <span>{t('add_to_cart_full', { price: (finalUnitPrice * quantity).toLocaleString() })}</span>
                   </>
                 )}
               </button>
@@ -234,7 +233,7 @@ export default function ProductDetailPage() {
               <div className="flex items-center gap-2">
                 <LeafIcon className="w-4 h-4 text-[#3A5A40]" />
                 <h3 className="font-bold text-xs text-[#1B3A24] uppercase tracking-wider">
-                  Fiche de Transparence Écologique
+                  {t('transparency_sheet')}
                 </h3>
               </div>
               <EcoScoreBadge grade={product.ecoScore} size="sm" />
@@ -242,23 +241,23 @@ export default function ProductDetailPage() {
 
             <div className="grid grid-cols-2 gap-3 text-xs">
               <div className="bg-white p-3 rounded-xl border border-[#E7E5E4]">
-                <span className="text-[#78716C] block text-[11px]">Intrants & Culture</span>
-                <strong className="text-[#1C1917] font-semibold">100% Zéro Pesticide</strong>
+                <span className="text-[#78716C] block text-[11px]">{t('inputs_farming')}</span>
+                <strong className="text-[#1C1917] font-semibold">{t('zero_pesticide')}</strong>
               </div>
 
               <div className="bg-white p-3 rounded-xl border border-[#E7E5E4]">
-                <span className="text-[#78716C] block text-[11px]">Emballage Garanti</span>
+                <span className="text-[#78716C] block text-[11px]">{t('guaranteed_packaging')}</span>
                 <strong className="text-[#1C1917] font-semibold">{product.ecoScoreDetails.packagingType}</strong>
               </div>
 
               <div className="bg-white p-3 rounded-xl border border-[#E7E5E4]">
-                <span className="text-[#78716C] block text-[11px]">Empreinte Carbone</span>
-                <strong className="text-[#3A5A40] font-semibold">-{product.ecoScoreDetails.co2ReductionPercent}% vs Importé</strong>
+                <span className="text-[#78716C] block text-[11px]">{t('carbon_footprint')}</span>
+                <strong className="text-[#3A5A40] font-semibold">-{product.ecoScoreDetails.co2ReductionPercent}% {t('vs_imported')}</strong>
               </div>
 
               <div className="bg-white p-3 rounded-xl border border-[#E7E5E4]">
-                <span className="text-[#78716C] block text-[11px]">Plastique Évité</span>
-                <strong className="text-[#3A5A40] font-semibold">+{product.ecoScoreDetails.plasticAvoidedGrams}g préservés</strong>
+                <span className="text-[#78716C] block text-[11px]">{t('plastic_avoided')}</span>
+                <strong className="text-[#3A5A40] font-semibold">+{product.ecoScoreDetails.plasticAvoidedGrams}g {t('preserved')}</strong>
               </div>
             </div>
           </div>
@@ -274,7 +273,7 @@ export default function ProductDetailPage() {
             <div className="space-y-1">
               <div className="flex items-center gap-2">
                 <span className="text-[11px] font-bold text-[#588157] uppercase tracking-wider">
-                  Producteur / Artisan
+                  {t('producer_artisan')}
                 </span>
                 <span className="text-xs text-[#A8A29E]">• {product.artisan.city}</span>
               </div>
@@ -282,7 +281,7 @@ export default function ProductDetailPage() {
                 {product.artisan.name} ({product.artisan.role})
               </h4>
               <p className="text-xs text-[#57534E] leading-relaxed">
-                "{product.artisan.bio}"
+                &ldquo;{product.artisan.bio}&rdquo;
               </p>
             </div>
           </div>
@@ -293,7 +292,7 @@ export default function ProductDetailPage() {
       {/* Specifications & Traceability Table */}
       <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#E7E5E4] space-y-4">
         <h3 className="font-serif-title text-xl font-bold text-[#1B3A24]">
-          Spécifications & Traçabilité du Lot
+          {t('specs_traceability')}
         </h3>
         <div className="divide-y divide-[#F5F5F4] text-xs">
           {Object.entries(product.specifications).map(([key, val], idx) => (

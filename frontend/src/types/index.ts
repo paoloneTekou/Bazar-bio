@@ -95,13 +95,29 @@ export interface Order {
   };
   deliveryZone: DeliveryZone;
   deliveryAddress: string;
+  deliveryTimeSlot?: 'morning' | 'afternoon';
+  couponCode?: string;
   paymentMethod: 'mtn_momo' | 'orange_momo' | 'cash_on_delivery' | 'card';
   paymentStatus: 'pending' | 'paid' | 'pay_on_delivery';
-  orderStatus: 'confirmed' | 'preparing' | 'out_for_delivery' | 'delivered';
+  orderStatus: 'confirmed' | 'preparing' | 'out_for_delivery' | 'delivered' | 'cancelled';
   createdAt: string;
   impactSaved: {
     plasticGrams: number;
     co2Kg: number;
     localFarmersSupported: number;
   };
+}
+
+export interface CouponValidationResult {
+  valid: boolean;
+  coupon?: {
+    id: number | string;
+    code: string;
+    discount_type: 'percent' | 'fixed';
+    discount_value: number;
+    calculated_discount: number;
+    min_order_amount: number;
+    max_discount?: number;
+  };
+  error?: string;
 }

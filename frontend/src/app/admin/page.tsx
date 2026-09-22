@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { PRODUCTS, CATEGORIES } from '@/lib/data';
 import { useLanguage } from '@/context/LanguageContext';
+import { SafeImage } from '@/components/ui/SafeImage';
 import {
   PackageIcon,
   UsersIcon,
@@ -27,7 +28,7 @@ export default function AdminDashboardPage() {
   };
 
   const handleDeleteProduct = (id: string) => {
-    if (confirm('Are you sure you want to remove this product from inventory?')) {
+    if (confirm(t('admin_confirm_delete'))) {
       setProductList((prev) => prev.filter((p) => p.id !== id));
     }
   };
@@ -37,16 +38,21 @@ export default function AdminDashboardPage() {
       
       {/* Top Header: Title & "Add New Product" Button (Matches Figma Mockup) */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <h1 className="font-serif-title text-3xl sm:text-4xl font-bold text-[#1B3A24]">
-          Vendor Dashboard
-        </h1>
+        <div>
+          <span className="text-xs font-semibold text-[#588157] uppercase tracking-wider block mb-1">
+            {t('admin_tag')}
+          </span>
+          <h1 className="font-serif-title text-3xl sm:text-4xl font-bold text-[#1B3A24]">
+            {t('admin_title')}
+          </h1>
+        </div>
 
         <button
           onClick={() => setIsAddModalOpen(true)}
-          className="px-5 py-2.5 rounded-xl bg-[#3A5A40] hover:bg-[#2D4732] text-white text-xs font-bold flex items-center gap-2 transition-all shadow-xs"
+          className="min-h-[44px] px-5 py-2.5 rounded-xl bg-[#3A5A40] hover:bg-[#2D4732] text-white text-xs font-bold flex items-center gap-2 transition-all shadow-xs"
         >
           <PlusIcon className="w-4 h-4" />
-          <span>Add New Product</span>
+          <span>{t('add_harvest_btn')}</span>
         </button>
       </div>
 
@@ -62,20 +68,20 @@ export default function AdminDashboardPage() {
             <div className="text-3xl sm:text-4xl font-bold tracking-tight">
               {productList.length}
             </div>
-            <p className="text-xs text-[#E5EDE6] font-medium mt-1">Total Products</p>
+            <p className="text-xs text-[#E5EDE6] font-medium mt-1">{t('total_warehouse_stock')}</p>
           </div>
         </div>
 
         {/* Tile 2: Total Revenue (Emerald Green) */}
         <div className="bg-[#00C853] text-white p-6 rounded-2xl shadow-xs space-y-3 relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="font-bold text-2xl">€</span>
+            <span className="font-bold text-2xl">FCFA</span>
           </div>
           <div>
             <div className="text-3xl sm:text-4xl font-bold tracking-tight">
-              €12,450
+              8 150 000
             </div>
-            <p className="text-xs text-white/90 font-medium mt-1">Total Revenue</p>
+            <p className="text-xs text-white/90 font-medium mt-1">{t('weekly_revenue')}</p>
           </div>
         </div>
 
@@ -88,7 +94,7 @@ export default function AdminDashboardPage() {
             <div className="text-3xl sm:text-4xl font-bold tracking-tight">
               342
             </div>
-            <p className="text-xs text-white/90 font-medium mt-1">Active Customers</p>
+            <p className="text-xs text-white/90 font-medium mt-1">{t('admin_active_customers')}</p>
           </div>
         </div>
 
@@ -101,7 +107,7 @@ export default function AdminDashboardPage() {
             <div className="text-3xl sm:text-4xl font-bold tracking-tight">
               +23%
             </div>
-            <p className="text-xs text-[#F5EFE6] font-medium mt-1">Growth</p>
+            <p className="text-xs text-[#F5EFE6] font-medium mt-1">{t('admin_growth_label')}</p>
           </div>
         </div>
 
@@ -120,7 +126,7 @@ export default function AdminDashboardPage() {
                 : 'text-[#78716C] hover:text-[#1C1917] hover:bg-[#FAF8F5]/50'
             }`}
           >
-            <span>Inventory Management</span>
+            <span>{t('admin_tab_inventory')}</span>
             {activeTab === 'inventory' && (
               <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#3A5A40]" />
             )}
@@ -134,7 +140,7 @@ export default function AdminDashboardPage() {
                 : 'text-[#78716C] hover:text-[#1C1917] hover:bg-[#FAF8F5]/50'
             }`}
           >
-            <span>Sales Analytics</span>
+            <span>{t('admin_tab_analytics')}</span>
             {activeTab === 'analytics' && (
               <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#3A5A40]" />
             )}
@@ -148,26 +154,27 @@ export default function AdminDashboardPage() {
               <table className="w-full text-left text-xs">
                 <thead className="text-[#78716C] font-semibold text-xs border-b border-[#E7E5E4] pb-3">
                   <tr>
-                    <th className="py-3 px-4">Product</th>
-                    <th className="py-3 px-4">Category</th>
-                    <th className="py-3 px-4">Price</th>
-                    <th className="py-3 px-4">Stock</th>
-                    <th className="py-3 px-4">Eco-Score</th>
-                    <th className="py-3 px-4 text-right">Actions</th>
+                    <th className="py-3 px-4">{t('col_product')}</th>
+                    <th className="py-3 px-4">{t('col_category')}</th>
+                    <th className="py-3 px-4">{t('col_price')}</th>
+                    <th className="py-3 px-4">{t('col_stock')}</th>
+                    <th className="py-3 px-4">{t('col_ecoscore')}</th>
+                    <th className="py-3 px-4 text-right">{t('col_actions')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#F5F5F4]">
                   {productList.map((p, idx) => {
                     const scoreNum = p.ecoScore === 'A' ? 95 - (idx % 4) : 88;
-                    const euroPrice = (p.price / 655).toFixed(2);
 
                     return (
                       <tr key={p.id} className="hover:bg-[#FAF8F5]/60 transition-colors">
                         {/* Product Column */}
                         <td className="py-4 px-4 flex items-center gap-3">
-                          <img
+                          <SafeImage
                             src={p.imageUrl}
-                            alt=""
+                            alt={p.name}
+                            category={p.categoryId}
+                            fallbackType={p.categoryId}
                             className="w-12 h-12 rounded-xl object-cover shrink-0 border border-[#E7E5E4]"
                           />
                           <div>
@@ -185,13 +192,13 @@ export default function AdminDashboardPage() {
 
                         {/* Price Column */}
                         <td className="py-4 px-4 font-bold text-[#1C1917]">
-                          €{euroPrice} <span className="text-[10px] text-[#78716C] font-normal">({p.price.toLocaleString()} FCFA)</span>
+                          {p.price.toLocaleString()} FCFA
                         </td>
 
                         {/* Stock Column */}
                         <td className="py-4 px-4">
                           <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-[#E5EDE6] text-[#2D4732]">
-                            {p.stockQuantity} units
+                            {t('admin_units', { count: p.stockQuantity })}
                           </span>
                         </td>
 
@@ -212,14 +219,14 @@ export default function AdminDashboardPage() {
                         <td className="py-4 px-4 text-right space-x-2">
                           <button
                             onClick={() => handleStockChange(p.id, 5)}
-                            className="p-1.5 text-[#57534E] hover:text-[#3A5A40] rounded-lg hover:bg-[#FAF8F5] transition-colors"
+                            className="min-w-[44px] min-h-[44px] inline-flex items-center justify-center p-1.5 text-[#57534E] hover:text-[#3A5A40] rounded-lg hover:bg-[#FAF8F5] transition-colors"
                             title="Edit Stock"
                           >
                             <Edit3Icon className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleDeleteProduct(p.id)}
-                            className="p-1.5 text-[#A8A29E] hover:text-[#DC2626] rounded-lg hover:bg-[#FAF8F5] transition-colors"
+                            className="min-w-[44px] min-h-[44px] inline-flex items-center justify-center p-1.5 text-[#A8A29E] hover:text-[#DC2626] rounded-lg hover:bg-[#FAF8F5] transition-colors"
                             title="Delete"
                           >
                             <TrashIcon className="w-4 h-4" />
@@ -241,7 +248,7 @@ export default function AdminDashboardPage() {
             {/* Sales by Category Bar Chart Section */}
             <div className="bg-[#FAF8F5] p-6 sm:p-8 rounded-3xl border border-[#E7E5E4] space-y-6">
               <h2 className="font-serif-title text-2xl font-bold text-[#1B3A24]">
-                Sales by Category
+                {t('admin_sales_by_category')}
               </h2>
 
               {/* Responsive Bar Chart Graphic */}
@@ -264,9 +271,9 @@ export default function AdminDashboardPage() {
                     <div
                       className="w-full bg-[#588157] rounded-t-lg transition-all hover:bg-[#3A5A40]"
                       style={{ height: '75%' }}
-                      title="Vegetables: €4,500"
+                      title={`${t('admin_cat_veg')}: 2 950 000 FCFA`}
                     />
-                    <span className="text-xs font-semibold text-[#1C1917] text-center">Vegetables</span>
+                    <span className="text-xs font-semibold text-[#1C1917] text-center">{t('admin_cat_veg')}</span>
                   </div>
 
                   {/* Bar 2: Skincare (3200) */}
@@ -274,9 +281,9 @@ export default function AdminDashboardPage() {
                     <div
                       className="w-full bg-[#588157] rounded-t-lg transition-all hover:bg-[#3A5A40]"
                       style={{ height: '53%' }}
-                      title="Skincare: €3,200"
+                      title={`${t('admin_cat_skin')}: 2 100 000 FCFA`}
                     />
-                    <span className="text-xs font-semibold text-[#1C1917] text-center">Skincare</span>
+                    <span className="text-xs font-semibold text-[#1C1917] text-center">{t('admin_cat_skin')}</span>
                   </div>
 
                   {/* Bar 3: Bulk Store (2800) */}
@@ -284,9 +291,9 @@ export default function AdminDashboardPage() {
                     <div
                       className="w-full bg-[#588157] rounded-t-lg transition-all hover:bg-[#3A5A40]"
                       style={{ height: '46%' }}
-                      title="Bulk Store: €2,800"
+                      title={`${t('admin_cat_bulk')}: 1 830 000 FCFA`}
                     />
-                    <span className="text-xs font-semibold text-[#1C1917] text-center">Bulk Store</span>
+                    <span className="text-xs font-semibold text-[#1C1917] text-center">{t('admin_cat_bulk')}</span>
                   </div>
 
                   {/* Bar 4: Dairy (3600) */}
@@ -294,9 +301,9 @@ export default function AdminDashboardPage() {
                     <div
                       className="w-full bg-[#588157] rounded-t-lg transition-all hover:bg-[#3A5A40]"
                       style={{ height: '60%' }}
-                      title="Dairy: €3,600"
+                      title={`${t('admin_cat_dairy')}: 2 350 000 FCFA`}
                     />
-                    <span className="text-xs font-semibold text-[#1C1917] text-center">Dairy</span>
+                    <span className="text-xs font-semibold text-[#1C1917] text-center">{t('admin_cat_dairy')}</span>
                   </div>
 
                 </div>
@@ -305,7 +312,7 @@ export default function AdminDashboardPage() {
               {/* Chart Legend */}
               <div className="flex items-center justify-center gap-2 pt-4 text-xs font-medium text-[#57534E]">
                 <span className="w-3 h-3 rounded bg-[#588157]" />
-                <span>sales</span>
+                <span>{t('sales_distribution')}</span>
               </div>
             </div>
 
@@ -315,28 +322,28 @@ export default function AdminDashboardPage() {
               {/* Card 1: Top Selling Products */}
               <div className="bg-white p-6 rounded-2xl border border-[#E7E5E4] shadow-xs space-y-4">
                 <h3 className="font-serif-title font-bold text-lg text-[#1B3A24]">
-                  Top Selling Products
+                  {t('sales_distribution')}
                 </h3>
                 <div className="space-y-3 text-xs">
                   <div className="flex justify-between items-center text-[#1C1917]">
-                    <span>#1 Organic Heirloom Tomatoes</span>
-                    <span className="font-bold">€159</span>
+                    <span>#1 Tomates Fraîches de Mfou</span>
+                    <span className="font-bold">104 000 FCFA</span>
                   </div>
                   <div className="flex justify-between items-center text-[#1C1917]">
-                    <span>#2 Natural Face Cream</span>
-                    <span className="font-bold">€523</span>
+                    <span>#2 Baume Pur Karité</span>
+                    <span className="font-bold">342 000 FCFA</span>
                   </div>
                   <div className="flex justify-between items-center text-[#1C1917]">
-                    <span>#3 Organic Raw Almonds</span>
-                    <span className="font-bold">€501</span>
+                    <span>#3 Poivre Blanc de Penja</span>
+                    <span className="font-bold">328 000 FCFA</span>
                   </div>
                   <div className="flex justify-between items-center text-[#1C1917]">
-                    <span>#4 Grass-Fed Organic Yogurt</span>
-                    <span className="font-bold">€568</span>
+                    <span>#4 Miel Sauvage d&apos;Obala</span>
+                    <span className="font-bold">372 000 FCFA</span>
                   </div>
                   <div className="flex justify-between items-center text-[#1C1917]">
-                    <span>#5 Organic Leafy Greens Mix</span>
-                    <span className="font-bold">€334</span>
+                    <span>#5 Feuilles de Morelle Noire</span>
+                    <span className="font-bold">219 000 FCFA</span>
                   </div>
                 </div>
               </div>
@@ -344,20 +351,20 @@ export default function AdminDashboardPage() {
               {/* Card 2: Low Stock Alert */}
               <div className="bg-white p-6 rounded-2xl border border-[#E7E5E4] shadow-xs space-y-4">
                 <h3 className="font-serif-title font-bold text-lg text-[#1B3A24]">
-                  Low Stock Alert
+                  {t('low_stock_alerts')}
                 </h3>
                 <div className="space-y-3 text-xs">
                   <div className="flex justify-between items-center">
-                    <span className="text-[#1C1917]">Organic Heirloom Tomatoes</span>
-                    <span className="font-bold text-[#DC2626]">45 left</span>
+                    <span className="text-[#1C1917]">Tomates Fraîches</span>
+                    <span className="font-bold text-[#DC2626]">{t('admin_left_stock', { count: 45 })}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-[#1C1917]">Natural Face Cream</span>
-                    <span className="font-bold text-[#DC2626]">28 left</span>
+                    <span className="text-[#1C1917]">Poivre de Penja IGP</span>
+                    <span className="font-bold text-[#DC2626]">{t('admin_left_stock', { count: 28 })}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-[#1C1917]">Baume Pur Karité</span>
-                    <span className="font-bold text-[#DC2626]">20 left</span>
+                    <span className="font-bold text-[#DC2626]">{t('admin_left_stock', { count: 20 })}</span>
                   </div>
                 </div>
               </div>
@@ -365,13 +372,13 @@ export default function AdminDashboardPage() {
               {/* Card 3: Category Performance */}
               <div className="bg-white p-6 rounded-2xl border border-[#E7E5E4] shadow-xs space-y-4">
                 <h3 className="font-serif-title font-bold text-lg text-[#1B3A24]">
-                  Category Performance
+                  {t('admin_cat_perf')}
                 </h3>
                 <div className="space-y-3 text-xs">
                   <div>
                     <div className="flex justify-between text-[#1C1917] font-medium mb-1">
-                      <span>Vegetables</span>
-                      <span className="font-bold">€4,500</span>
+                      <span>{t('admin_cat_veg')}</span>
+                      <span className="font-bold">2 950 000 FCFA</span>
                     </div>
                     <div className="w-full h-2 rounded-full bg-[#E5EDE6] overflow-hidden">
                       <div className="h-full bg-[#3A5A40] rounded-full" style={{ width: '85%' }} />
@@ -380,8 +387,8 @@ export default function AdminDashboardPage() {
 
                   <div>
                     <div className="flex justify-between text-[#1C1917] font-medium mb-1">
-                      <span>Skincare</span>
-                      <span className="font-bold">€3,200</span>
+                      <span>{t('admin_cat_skin')}</span>
+                      <span className="font-bold">2 100 000 FCFA</span>
                     </div>
                     <div className="w-full h-2 rounded-full bg-[#E5EDE6] overflow-hidden">
                       <div className="h-full bg-[#3A5A40] rounded-full" style={{ width: '65%' }} />
@@ -390,8 +397,8 @@ export default function AdminDashboardPage() {
 
                   <div>
                     <div className="flex justify-between text-[#1C1917] font-medium mb-1">
-                      <span>Bulk Store</span>
-                      <span className="font-bold">€2,800</span>
+                      <span>{t('admin_cat_bulk')}</span>
+                      <span className="font-bold">1 830 000 FCFA</span>
                     </div>
                     <div className="w-full h-2 rounded-full bg-[#E5EDE6] overflow-hidden">
                       <div className="h-full bg-[#3A5A40] rounded-full" style={{ width: '55%' }} />
@@ -400,8 +407,8 @@ export default function AdminDashboardPage() {
 
                   <div>
                     <div className="flex justify-between text-[#1C1917] font-medium mb-1">
-                      <span>Dairy</span>
-                      <span className="font-bold">€3,600</span>
+                      <span>{t('admin_cat_dairy')}</span>
+                      <span className="font-bold">2 350 000 FCFA</span>
                     </div>
                     <div className="w-full h-2 rounded-full bg-[#E5EDE6] overflow-hidden">
                       <div className="h-full bg-[#3A5A40] rounded-full" style={{ width: '70%' }} />
@@ -420,36 +427,36 @@ export default function AdminDashboardPage() {
       {/* Add New Product Modal */}
       {isAddModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl space-y-5 animate-in fade-in zoom-in-95">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl space-y-5 animate-in fade-in zoom-in-95 max-h-[90dvh] overflow-y-auto">
             <h2 className="font-serif-title text-2xl font-bold text-[#1B3A24]">
-              Add New Organic Product
+              {t('admin_add_modal_title')}
             </h2>
             <p className="text-xs text-[#78716C]">
-              Add a harvest or artisan creation with certified origin and zero chemical input.
+              {t('admin_add_modal_desc')}
             </p>
 
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                alert('Product successfully added to inventory!');
+                alert(t('admin_add_success'));
                 setIsAddModalOpen(false);
               }}
               className="space-y-4 text-xs"
             >
               <div>
-                <label className="font-semibold text-[#1C1917] block mb-1">Product Name</label>
+                <label className="font-semibold text-[#1C1917] block mb-1">{t('admin_product_name')}</label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g., Organic Honey of Adamawa"
-                  className="w-full px-3 py-2 border border-[#E7E5E4] rounded-xl"
+                  placeholder={t('admin_placeholder_name')}
+                  className="w-full px-3 py-2 border border-[#E7E5E4] rounded-xl text-base sm:text-xs"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="font-semibold text-[#1C1917] block mb-1">Category</label>
-                  <select className="w-full px-3 py-2 border border-[#E7E5E4] rounded-xl bg-white">
+                  <label className="font-semibold text-[#1C1917] block mb-1">{t('admin_category')}</label>
+                  <select className="w-full px-3 py-2 border border-[#E7E5E4] rounded-xl bg-white text-base sm:text-xs">
                     {CATEGORIES.map((c) => (
                       <option key={c.id} value={c.id}>{c.name}</option>
                     ))}
@@ -457,30 +464,30 @@ export default function AdminDashboardPage() {
                 </div>
 
                 <div>
-                  <label className="font-semibold text-[#1C1917] block mb-1">Price (FCFA)</label>
+                  <label className="font-semibold text-[#1C1917] block mb-1">{t('admin_price_fcfa')}</label>
                   <input
                     type="number"
                     required
-                    placeholder="2500"
-                    className="w-full px-3 py-2 border border-[#E7E5E4] rounded-xl"
+                    placeholder={t('admin_placeholder_price')}
+                    className="w-full px-3 py-2 border border-[#E7E5E4] rounded-xl text-base sm:text-xs"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="font-semibold text-[#1C1917] block mb-1">Stock Quantity</label>
+                  <label className="font-semibold text-[#1C1917] block mb-1">{t('admin_stock_qty')}</label>
                   <input
                     type="number"
                     required
-                    placeholder="50"
-                    className="w-full px-3 py-2 border border-[#E7E5E4] rounded-xl"
+                    placeholder={t('admin_placeholder_stock')}
+                    className="w-full px-3 py-2 border border-[#E7E5E4] rounded-xl text-base sm:text-xs"
                   />
                 </div>
 
                 <div>
-                  <label className="font-semibold text-[#1C1917] block mb-1">Eco-Score</label>
-                  <select className="w-full px-3 py-2 border border-[#E7E5E4] rounded-xl bg-white">
+                  <label className="font-semibold text-[#1C1917] block mb-1">{t('admin_ecoscore')}</label>
+                  <select className="w-full px-3 py-2 border border-[#E7E5E4] rounded-xl bg-white text-base sm:text-xs">
                     <option value="A">Grade A (95/100)</option>
                     <option value="B">Grade B (85/100)</option>
                   </select>
@@ -491,15 +498,15 @@ export default function AdminDashboardPage() {
                 <button
                   type="button"
                   onClick={() => setIsAddModalOpen(false)}
-                  className="px-4 py-2 border border-[#E7E5E4] rounded-xl text-[#57534E] hover:bg-[#FAF8F5]"
+                  className="min-h-[44px] px-4 py-2 border border-[#E7E5E4] rounded-xl text-[#57534E] hover:bg-[#FAF8F5]"
                 >
-                  Cancel
+                  {t('admin_cancel')}
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-[#3A5A40] text-white font-bold hover:bg-[#2D4732]"
+                  className="min-h-[44px] px-5 py-2 rounded-xl bg-[#3A5A40] text-white font-bold hover:bg-[#2D4732]"
                 >
-                  Save Product
+                  {t('admin_save_btn')}
                 </button>
               </div>
             </form>

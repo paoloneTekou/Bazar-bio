@@ -6,6 +6,7 @@ import { CartProvider } from '@/context/CartContext';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { CartDrawer } from '@/components/cart/CartDrawer';
+import { MobileCartBar } from '@/components/cart/MobileCartBar';
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
@@ -39,6 +40,7 @@ export default function RootLayout({
             <main className="flex-1">
               {children}
             </main>
+            <MobileCartBar />
             <Footer />
           </CartProvider>
         </LanguageProvider>

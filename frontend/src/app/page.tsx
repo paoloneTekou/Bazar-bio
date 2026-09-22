@@ -5,20 +5,20 @@ import Link from 'next/link';
 import { CATEGORIES, PRODUCTS, ARTISANS, IMPACT_GLOBAL_STATS } from '@/lib/data';
 import { ProductCard } from '@/components/products/ProductCard';
 import { SafeImage } from '@/components/ui/SafeImage';
+import { useLanguage } from '@/context/LanguageContext';
 import {
   LeafIcon,
   PackageIcon,
   MapPinIcon,
   TruckIcon,
-  ShieldCheckIcon,
   SparklesIcon,
   ArrowRightIcon,
   HeartIcon,
   CheckCircle2Icon,
-  StarIcon,
 } from '@/components/ui/Icons';
 
 export default function HomePage() {
+  const { t } = useLanguage();
   const featuredProducts = PRODUCTS.slice(0, 4);
 
   return (
@@ -28,9 +28,10 @@ export default function HomePage() {
       <section className="relative overflow-hidden min-h-[560px] flex items-center justify-center bg-[#1B3A24]">
         {/* Background Image with Dark Vignette Overlay */}
         <div className="absolute inset-0 z-0">
-          <img
+          <SafeImage
             src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1920&q=80"
-            alt="Légumes bio frais et terroir"
+            alt={t('hero_badge')}
+            fallbackType="legumes-bio"
             className="w-full h-full object-cover object-center opacity-35"
           />
           <div className="absolute inset-0 bg-radial-at-c from-transparent via-[#1B3A24]/60 to-[#1B3A24]" />
@@ -39,30 +40,30 @@ export default function HomePage() {
         <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 text-center py-20 space-y-6">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#3A5A40]/80 border border-[#A3C0A6]/40 text-[#E8EFE9] text-xs font-semibold backdrop-blur-md animate-in fade-in slide-in-from-top-3">
             <LeafIcon className="w-3.5 h-3.5 text-[#A3C0A6]" />
-            <span>100% Bio & Terroir Local à Yaoundé</span>
+            <span>{t('hero_badge')}</span>
           </div>
 
           <h1 className="font-serif-title text-4xl sm:text-6xl font-bold text-white tracking-tight leading-tight">
-            Shop Sustainably
+            {t('hero_title')}
           </h1>
 
           <p className="max-w-2xl mx-auto text-base sm:text-lg text-[#E8EFE9] leading-relaxed font-light">
-            Découvrez nos produits biologiques et artisanaux du Cameroun. Récoltés le matin même à Mfou et Obala, livrés sans plastique à domicile à Yaoundé.
+            {t('hero_subtitle')}
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
             <Link
               href="/products"
-              className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-[#588157] hover:bg-[#3A5A40] text-white text-sm font-bold tracking-wide flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-xl hover:scale-105"
+              className="w-full sm:w-auto min-h-[44px] px-8 py-3.5 rounded-full bg-[#588157] hover:bg-[#3A5A40] text-white text-sm font-bold tracking-wide flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-xl hover:scale-105"
             >
-              <span>Explore Products</span>
+              <span>{t('hero_cta_products')}</span>
               <ArrowRightIcon className="w-4 h-4" />
             </Link>
             <Link
               href="/dashboard"
-              className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-sm font-semibold backdrop-blur-md border border-white/20 transition-all flex items-center justify-center gap-2"
+              className="w-full sm:w-auto min-h-[44px] px-7 py-3.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-sm font-semibold backdrop-blur-md border border-white/20 transition-all flex items-center justify-center gap-2"
             >
-              <span>Notre Impact Écologique</span>
+              <span>{t('hero_cta_impact')}</span>
             </Link>
           </div>
         </div>
@@ -81,7 +82,7 @@ export default function HomePage() {
                 {IMPACT_GLOBAL_STATS.totalBioProduceKg.toLocaleString()} kg
               </div>
               <p className="text-xs text-[#78716C] font-medium">
-                Aliments 100% bio et sans pesticides livrés
+                {t('ticker_bio_produce')}
               </p>
             </div>
           </div>
@@ -95,7 +96,7 @@ export default function HomePage() {
                 {IMPACT_GLOBAL_STATS.totalPlasticBagsAvoided.toLocaleString()}
               </div>
               <p className="text-xs text-[#78716C] font-medium">
-                Sacs plastiques évités grâce aux emballages kraft
+                {t('ticker_plastic_avoided')}
               </p>
             </div>
           </div>
@@ -106,10 +107,10 @@ export default function HomePage() {
             </div>
             <div>
               <div className="text-2xl font-bold text-[#1B3A24]">
-                {IMPACT_GLOBAL_STATS.localFarmingFamiliesSupported} Familles
+                {t('ticker_families_count', { count: IMPACT_GLOBAL_STATS.localFarmingFamiliesSupported })}
               </div>
               <p className="text-xs text-[#78716C] font-medium">
-                Agriculteurs et artisans locaux soutenus en direct
+                {t('ticker_farmers_supported')}
               </p>
             </div>
           </div>
@@ -121,10 +122,10 @@ export default function HomePage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
           <h2 className="font-serif-title text-3xl sm:text-4xl font-bold text-[#1B3A24]">
-            Shop by Category
+            {t('home_categories_title')}
           </h2>
           <p className="text-sm text-[#78716C]">
-            Explorez notre sélection rigoureuse de produits biologiques, sains et durables.
+            {t('home_categories_subtitle')}
           </p>
         </div>
 
@@ -152,7 +153,7 @@ export default function HomePage() {
                   {category.name}
                 </h3>
                 <span className="text-[11px] text-[#C9DBCB] block">
-                  {category.itemCount} produits en saison
+                  {t('category_in_season', { count: category.itemCount })}
                 </span>
               </div>
             </Link>
@@ -166,10 +167,10 @@ export default function HomePage() {
           <div>
             <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#588157] uppercase tracking-wider mb-1">
               <SparklesIcon className="w-3.5 h-3.5" />
-              <span>Arrivages du Matin</span>
+              <span>{t('home_arrivals_badge')}</span>
             </div>
             <h2 className="font-serif-title text-3xl font-bold text-[#1B3A24]">
-              Récoltes Fraîches & Coups de Cœur
+              {t('home_arrivals_title')}
             </h2>
           </div>
 
@@ -177,7 +178,7 @@ export default function HomePage() {
             href="/products"
             className="inline-flex items-center gap-1.5 text-xs font-bold text-[#3A5A40] hover:text-[#2D4732] group"
           >
-            <span>Tout voir sur le marché</span>
+            <span>{t('home_arrivals_view_all')}</span>
             <ArrowRightIcon className="w-4 h-4 transition-transform group-hover:translate-x-1" />
           </Link>
         </div>
@@ -193,10 +194,10 @@ export default function HomePage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-12 space-y-2">
           <h2 className="font-serif-title text-3xl sm:text-4xl font-bold text-[#1B3A24]">
-            Why Choose Bazar-Bio?
+            {t('why_choose_title')}
           </h2>
           <p className="text-sm text-[#78716C]">
-            Nous nous engageons pour une transparence totale et une empreinte écologique minimale.
+            {t('why_choose_subtitle')}
           </p>
         </div>
 
@@ -208,10 +209,10 @@ export default function HomePage() {
               <PackageIcon className="w-8 h-8" />
             </div>
             <h3 className="font-serif-title text-xl font-bold text-[#1B3A24]">
-              Plastic-Free
+              {t('why_plastic_free_title')}
             </h3>
             <p className="text-xs text-[#78716C] leading-relaxed">
-              Tous nos produits utilisent des emballages 100% biodégradables (papier kraft, feuilles de bananier) ou des bocaux en verre consignés.
+              {t('why_plastic_free_desc')}
             </p>
           </div>
 
@@ -221,10 +222,10 @@ export default function HomePage() {
               <MapPinIcon className="w-8 h-8" />
             </div>
             <h3 className="font-serif-title text-xl font-bold text-[#1B3A24]">
-              Local Sourcing
+              {t('why_local_sourcing_title')}
             </h3>
             <p className="text-xs text-[#78716C] leading-relaxed">
-              Nous priorisons les producteurs situés à moins de 50 km de Yaoundé (Mfou, Obala) pour garantir fraîcheur et zéro intermédiaire.
+              {t('why_local_sourcing_desc')}
             </p>
           </div>
 
@@ -234,10 +235,10 @@ export default function HomePage() {
               <TruckIcon className="w-8 h-8" />
             </div>
             <h3 className="font-serif-title text-xl font-bold text-[#1B3A24]">
-              Carbon Neutral Delivery
+              {t('why_delivery_title')}
             </h3>
             <p className="text-xs text-[#78716C] leading-relaxed">
-              Livraison groupée optimisée par quartier dans tout Yaoundé (Bastos, Odza, Omnisports, Mendong) réduisant les émissions de CO₂.
+              {t('why_delivery_desc')}
             </p>
           </div>
 
@@ -251,15 +252,15 @@ export default function HomePage() {
           <div className="space-y-6">
             <div className="space-y-2">
               <span className="text-xs font-semibold uppercase tracking-widest text-[#588157]">
-                Impact & Transparence
+                {t('diff_badge')}
               </span>
               <h2 className="font-serif-title text-3xl sm:text-4xl font-bold text-[#1B3A24] leading-tight">
-                Your Shopping Makes a Difference
+                {t('diff_title')}
               </h2>
             </div>
 
             <p className="text-sm text-[#57534E] leading-relaxed">
-              Chaque produit sur Bazar-Bio est méticuleusement sélectionné. Nous garantissons une traçabilité totale sur l'origine, les méthodes de culture et l'empreinte environnementale de chaque commande.
+              {t('diff_desc')}
             </p>
 
             <div className="space-y-4">
@@ -268,8 +269,8 @@ export default function HomePage() {
                   <LeafIcon className="w-5 h-5" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-sm text-[#1C1917]">100% Garanti Sans Pesticides</h4>
-                  <p className="text-xs text-[#78716C]">Aucun fertilisant chimique ni pesticide de synthèse utilisé.</p>
+                  <h4 className="font-bold text-sm text-[#1C1917]">{t('diff_pesticide_title')}</h4>
+                  <p className="text-xs text-[#78716C]">{t('diff_pesticide_desc')}</p>
                 </div>
               </div>
 
@@ -278,8 +279,8 @@ export default function HomePage() {
                   <HeartIcon className="w-5 h-5" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-sm text-[#1C1917]">Soutien Direct aux Producteurs</h4>
-                  <p className="text-xs text-[#78716C]">Rémunération juste et immédiate sans intermédiaires spéculateurs.</p>
+                  <h4 className="font-bold text-sm text-[#1C1917]">{t('diff_support_title')}</h4>
+                  <p className="text-xs text-[#78716C]">{t('diff_support_desc')}</p>
                 </div>
               </div>
 
@@ -288,8 +289,8 @@ export default function HomePage() {
                   <PackageIcon className="w-5 h-5" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-sm text-[#1C1917]">Emballages Zéro Déchet</h4>
-                  <p className="text-xs text-[#78716C]">Matériaux 100% compostables, réutilisables ou recyclés.</p>
+                  <h4 className="font-bold text-sm text-[#1C1917]">{t('diff_packaging_title')}</h4>
+                  <p className="text-xs text-[#78716C]">{t('diff_packaging_desc')}</p>
                 </div>
               </div>
             </div>
@@ -297,9 +298,9 @@ export default function HomePage() {
             <div className="pt-2">
               <Link
                 href="/products"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#3A5A40] hover:bg-[#2D4732] text-white text-xs font-bold transition-all shadow-xs"
+                className="inline-flex items-center gap-2 min-h-[44px] px-6 py-3 rounded-full bg-[#3A5A40] hover:bg-[#2D4732] text-white text-xs font-bold transition-all shadow-xs"
               >
-                <span>Start Shopping</span>
+                <span>{t('diff_start_shopping')}</span>
                 <ArrowRightIcon className="w-4 h-4" />
               </Link>
             </div>
@@ -307,18 +308,19 @@ export default function HomePage() {
 
           {/* Right Image Container */}
           <div className="relative rounded-2xl overflow-hidden shadow-md aspect-4/3 lg:aspect-auto lg:h-[420px] bg-white border border-[#E7E5E4]">
-            <img
+            <SafeImage
               src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=1000&q=80"
-              alt="Emballages écologiques zéro plastique"
+              alt={t('diff_green_pledge_title')}
+              fallbackType="news"
               className="w-full h-full object-cover"
             />
             <div className="absolute bottom-4 left-4 right-4 p-4 rounded-xl bg-white/95 backdrop-blur-md border border-[#E7E5E4] shadow-xs text-xs space-y-1">
               <div className="flex items-center gap-1.5 text-[#3A5A40] font-bold">
                 <CheckCircle2Icon className="w-4 h-4" />
-                <span>Engagement Emballage Vert</span>
+                <span>{t('diff_green_pledge_title')}</span>
               </div>
               <p className="text-[#78716C] text-[11px]">
-                À Yaoundé, 100% de vos commandes sont livrées dans des sacs en fibres naturelles ou papier kraft recyclé.
+                {t('diff_green_pledge_desc')}
               </p>
             </div>
           </div>
@@ -330,13 +332,13 @@ export default function HomePage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
           <span className="text-xs font-semibold uppercase tracking-widest text-[#588157]">
-            Le Visage du Terroir
+            {t('artisans_badge')}
           </span>
           <h2 className="font-serif-title text-3xl sm:text-4xl font-bold text-[#1B3A24]">
-            Rencontrez Nos Artisans & Maraîchers
+            {t('artisans_title')}
           </h2>
           <p className="text-sm text-[#78716C]">
-            Derrière chaque légume et chaque bijou, découvrez des passionnés dévoués à la pureté et à l'excellence.
+            {t('artisans_subtitle')}
           </p>
         </div>
 
@@ -363,17 +365,17 @@ export default function HomePage() {
                   </div>
                 </div>
                 <p className="text-xs text-[#57534E] leading-relaxed line-clamp-3">
-                  "{artisan.bio}"
+                  &ldquo;{artisan.bio}&rdquo;
                 </p>
               </div>
 
               <div className="pt-3 border-t border-[#F5F5F4] flex items-center justify-between text-xs">
-                <span className="text-[#78716C]">{artisan.productsCount} créations</span>
+                <span className="text-[#78716C]">{t('artisan_creations_count', { count: artisan.productsCount })}</span>
                 <Link
                   href={`/products?artisan=${artisan.id}`}
-                  className="font-semibold text-[#3A5A40] hover:underline flex items-center gap-1"
+                  className="font-semibold text-[#3A5A40] hover:underline flex items-center gap-1 min-h-[44px]"
                 >
-                  <span>Ses produits</span>
+                  <span>{t('artisan_view_products')}</span>
                   <ArrowRightIcon className="w-3.5 h-3.5" />
                 </Link>
               </div>
@@ -387,20 +389,20 @@ export default function HomePage() {
         <div className="bg-[#2D4732] rounded-3xl p-8 sm:p-12 text-white text-center space-y-6 relative overflow-hidden shadow-xl">
           <div className="relative z-10 max-w-2xl mx-auto space-y-3">
             <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-[#588157] text-[#FAF8F5]">
-              🌾 Panier Bio Hebdomadaire
+              {t('sub_banner_badge')}
             </span>
             <h2 className="font-serif-title text-3xl sm:text-4xl font-bold tracking-tight">
-              Abonnez-vous & Économisez 10%
+              {t('sub_banner_title')}
             </h2>
             <p className="text-xs sm:text-sm text-[#C9DBCB] leading-relaxed">
-              Recevez chaque semaine votre panier de légumes de saison, fruits et essentiels bio directement à votre porte à Yaoundé. Sans engagement, modifiable à tout moment.
+              {t('sub_banner_desc')}
             </p>
             <div className="pt-4">
               <Link
                 href="/products"
-                className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-[#FAF8F5] text-[#1B3A24] font-bold text-xs hover:bg-white transition-all shadow-md"
+                className="inline-flex items-center gap-2 min-h-[44px] px-8 py-3.5 rounded-full bg-[#FAF8F5] text-[#1B3A24] font-bold text-xs hover:bg-white transition-all shadow-md"
               >
-                <span>Composer mon panier hebdomadaire</span>
+                <span>{t('sub_banner_cta')}</span>
                 <ArrowRightIcon className="w-4 h-4" />
               </Link>
             </div>

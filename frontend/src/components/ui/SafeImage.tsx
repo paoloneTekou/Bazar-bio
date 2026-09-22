@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { getFallbackImage, getSvgFallback } from '@/lib/placeholders';
 
-interface SafeImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
+interface SafeImageProps extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'src'> {
   src?: string | null;
   alt: string;
   category?: string;
@@ -34,16 +34,13 @@ export function SafeImage({
   const [imgSrc, setImgSrc] = useState<string>(initialSrc);
   const [errorStage, setErrorStage] = useState<number>(src && src.trim() !== '' ? 0 : 1);
 
-  // Sync if src prop changes (e.g. user toggles gallery thumbnail)
-  useEffect(() => {
-    if (src && src.trim() !== '') {
-      setImgSrc(src);
-      setErrorStage(0);
-    } else {
-      setImgSrc(photoFallback);
-      setErrorStage(1);
-    }
-  }, [src, photoFallback]);
+  const [prevSrc, setPrevSrc] = useState<string | null | undefined>(src);
+
+  if (src !== prevSrc) {
+    setPrevSrc(src);
+    setImgSrc(src && src.trim() !== '' ? src : photoFallback);
+    setErrorStage(src && src.trim() !== '' ? 0 : 1);
+  }
 
   const handleError = () => {
     if (errorStage === 0) {

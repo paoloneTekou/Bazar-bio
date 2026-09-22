@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { useLanguage } from '@/context/LanguageContext';
-import { LeafIcon, SearchIcon, ShoppingCartIcon, UserIcon, SparklesIcon, XIcon, ArrowRightIcon, WhatsAppIcon } from '@/components/ui/Icons';
+import { LeafIcon, SearchIcon, ShoppingCartIcon, UserIcon, SparklesIcon, XIcon, WhatsAppIcon } from '@/components/ui/Icons';
+import { SafeImage } from '@/components/ui/SafeImage';
 import { PRODUCTS } from '@/lib/data';
 
 export function Navbar() {
@@ -98,9 +99,11 @@ export function Navbar() {
                       href={`/products/${product.id}`}
                       className="flex items-center gap-3 p-3 hover:bg-[#FAF8F5] transition-colors"
                     >
-                      <img
+                      <SafeImage
                         src={product.imageUrl}
                         alt={product.name}
+                        category={product.categoryId}
+                        fallbackType={product.categoryId}
                         className="w-12 h-12 rounded-lg object-cover"
                       />
                       <div className="flex-1 min-w-0">

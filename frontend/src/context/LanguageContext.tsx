@@ -14,19 +14,18 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>('fr');
-  const [isHydrated, setIsHydrated] = useState(false);
-
   useEffect(() => {
     try {
       const saved = localStorage.getItem('bazar_bio_lang') as Locale | null;
       if (saved === 'fr' || saved === 'en') {
-        setLocaleState(saved);
         document.documentElement.lang = saved;
+        queueMicrotask(() => {
+          setLocaleState(saved);
+        });
       }
     } catch (e) {
       console.warn('Could not read language from localStorage', e);
     }
-    setIsHydrated(true);
   }, []);
 
   const setLocale = (newLocale: Locale) => {

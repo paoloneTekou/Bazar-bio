@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_09_04_152845) do
+ActiveRecord::Schema[7.2].define(version: 2026_09_08_100531) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -153,8 +153,10 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_04_152845) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "whatsapp_opt_in", default: true, null: false
+    t.string "delivery_time_slot", default: "morning", null: false
     t.index ["coupon_id"], name: "index_orders_on_coupon_id"
     t.index ["customer_id"], name: "index_orders_on_customer_id"
+    t.index ["delivery_time_slot"], name: "index_orders_on_delivery_time_slot"
     t.index ["delivery_zone_id"], name: "index_orders_on_delivery_zone_id"
     t.index ["order_reference"], name: "index_orders_on_order_reference", unique: true
     t.index ["order_status_id"], name: "index_orders_on_order_status_id"

@@ -206,4 +206,42 @@ products_data.each do |p_data|
   end
 end
 
-puts "✅ Seeding completed! Created #{Product.count} products, #{DeliveryZone.count} delivery zones, and #{Category.count} categories."
+# 11. Promotional Coupons
+coupons_data = [
+  {
+    code: "BIENVENUE10",
+    discount_type: "percent",
+    discount_value: 10.0,
+    min_order_amount: 3000.0,
+    max_discount: 5000.0,
+    is_active: true
+  },
+  {
+    code: "BIO2026",
+    discount_type: "fixed",
+    discount_value: 500.0,
+    min_order_amount: 3000.0,
+    max_discount: 500.0,
+    is_active: true
+  },
+  {
+    code: "YAOUNDE1000",
+    discount_type: "fixed",
+    discount_value: 1000.0,
+    min_order_amount: 5000.0,
+    max_discount: 1000.0,
+    is_active: true
+  }
+]
+
+coupons_data.each do |c_data|
+  Coupon.find_or_create_by!(code: c_data[:code]) do |c|
+    c.discount_type = c_data[:discount_type]
+    c.discount_value = c_data[:discount_value]
+    c.min_order_amount = c_data[:min_order_amount]
+    c.max_discount = c_data[:max_discount]
+    c.is_active = c_data[:is_active]
+  end
+end
+
+puts "✅ Seeding completed! Created #{Product.count} products, #{DeliveryZone.count} delivery zones, #{Category.count} categories, and #{Coupon.count} coupons."
