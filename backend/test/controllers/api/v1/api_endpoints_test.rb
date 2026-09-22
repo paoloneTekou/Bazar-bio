@@ -10,7 +10,7 @@ module Api
         end
 
         @product = Product.first
-        @zone = DeliveryZone.first
+        @zone = DeliveryZone.where("delivery_fee > 0").first || DeliveryZone.first
         @payment = PaymentMethod.first
       end
 
@@ -132,6 +132,44 @@ module Api
         assert_response :unprocessable_entity
         json = JSON.parse(response.body)
         assert json["error"].include?("montant minimum de commande")
+      end
+
+      test "POST /api/v1/orders allows orders below 3000 FCFA for store pickup" do
+        cheap_product = Product.create!(
+          name: "Herbes Aromatiques",
+          category: Category.first,
+          unit: Unit.first,
+          season: Season.first,
+          origin_city: City.first,
+          price: 800.0,
+          product_type: "produce",
+          stock_quantity: 15,
+          is_active: true
+        )
+
+        pickup_zone = DeliveryZone.find_or_create_by!(city: City.first, name: "Point de Retrait - Boutique Bazar-Bio (Bastos)") do |z|
+          z.delivery_fee = 0.0
+          z.is_active = true
+        end
+
+        post api_v1_orders_url, params: {
+          order: {
+            customer_name: "Client Retrait",
+            customer_phone: "+237690112233",
+            delivery_zone_id: pickup_zone.id,
+            payment_method_id: @payment.id,
+            fulfillment_type: "pickup"
+          },
+          items: [{ product_id: cheap_product.id, quantity: 1 }]
+        }, as: :json
+
+        assert_response :created
+        json = JSON.parse(response.body)
+        assert_equal 800.0, json["subtotal"].to_f
+        assert_equal 0.0, json["delivery_fee"].to_f
+        assert_equal 800.0, json["total_amount"].to_f
+        decoded_url = CGI.unescape(json["whatsapp_url"])
+        assert decoded_url.include?("Point de collecte") || decoded_url.include?("Retrait")
       end
 
       test "POST /api/v1/orders applies coupon and delivery time slot" do

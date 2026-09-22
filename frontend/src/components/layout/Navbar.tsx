@@ -5,9 +5,9 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { useLanguage } from '@/context/LanguageContext';
-import { LeafIcon, SearchIcon, ShoppingCartIcon, UserIcon, SparklesIcon, XIcon, WhatsAppIcon } from '@/components/ui/Icons';
+import { LeafIcon, SearchIcon, ShoppingCartIcon, UserIcon, XIcon, WhatsAppIcon } from '@/components/ui/Icons';
 import { SafeImage } from '@/components/ui/SafeImage';
-import { PRODUCTS } from '@/lib/data';
+import { PRODUCTS, CATEGORIES } from '@/lib/data';
 
 export function Navbar() {
   const pathname = usePathname();
@@ -48,7 +48,7 @@ export function Navbar() {
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5 group">
+          <Link href="/" className="flex items-center gap-2.5 group shrink-0">
             <div className="w-10 h-10 rounded-full bg-[#3A5A40] text-white flex items-center justify-center shadow-xs transition-transform group-hover:scale-105">
               <LeafIcon className="w-5 h-5" />
             </div>
@@ -77,8 +77,10 @@ export function Navbar() {
               <SearchIcon className="w-4 h-4 text-[#78716C] absolute left-3.5 pointer-events-none" />
               {searchQuery && (
                 <button
+                  type="button"
                   onClick={() => setSearchQuery('')}
                   className="absolute right-3.5 text-[#78716C] hover:text-[#1C1917]"
+                  aria-label="Clear search"
                 >
                   <XIcon className="w-4 h-4" />
                 </button>
@@ -136,6 +138,7 @@ export function Navbar() {
             {/* Language Switcher Pill (FR / EN) */}
             <div className="flex items-center bg-[#FAF8F5] border border-[#E7E5E4] rounded-full p-0.5 text-xs font-semibold">
               <button
+                type="button"
                 onClick={() => setLocale('fr')}
                 className={`px-2.5 py-1 rounded-full transition-all ${
                   locale === 'fr'
@@ -147,6 +150,7 @@ export function Navbar() {
                 FR
               </button>
               <button
+                type="button"
                 onClick={() => setLocale('en')}
                 className={`px-2.5 py-1 rounded-full transition-all ${
                   locale === 'en'
@@ -182,34 +186,27 @@ export function Navbar() {
             {/* User Account / Dashboard Link */}
             <Link
               href="/dashboard"
-              className="p-2 rounded-full text-[#44403C] hover:bg-[#FAF8F5] hover:text-[#3A5A40] transition-colors"
+              className="p-2 rounded-full text-[#44403C] hover:bg-[#FAF8F5] hover:text-[#3A5A40] transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
               title={t('nav_impact')}
+              aria-label={t('nav_impact')}
             >
               <UserIcon className="w-5 h-5" />
             </Link>
 
             {/* Cart Trigger Button with Live Badge */}
             <button
+              type="button"
               onClick={() => setIsCartOpen(true)}
-              className="relative p-2 rounded-full text-[#1B3A24] hover:bg-[#FAF8F5] transition-colors flex items-center"
+              className="relative p-2 rounded-full text-[#1B3A24] hover:bg-[#FAF8F5] transition-colors flex items-center min-h-[44px] min-w-[44px] justify-center"
               aria-label="Cart"
             >
               <ShoppingCartIcon className="w-5 h-5" />
               {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-[#3A5A40] text-white text-[11px] font-bold w-5 h-5 rounded-full flex items-center justify-center shadow-xs animate-in zoom-in-75">
+                <span className="absolute -top-0.5 -right-0.5 bg-[#3A5A40] text-white text-[11px] font-bold w-5 h-5 rounded-full flex items-center justify-center shadow-xs animate-in zoom-in-75">
                   {cartCount}
                 </span>
               )}
             </button>
-
-            {/* Vendor / Admin Button */}
-            <Link
-              href="/admin"
-              className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#3A5A40] hover:bg-[#2D4732] text-white text-xs font-semibold tracking-wide transition-all shadow-xs"
-            >
-              <SparklesIcon className="w-3.5 h-3.5" />
-              <span>{t('nav_vendor')}</span>
-            </Link>
           </div>
         </div>
 
@@ -218,15 +215,36 @@ export function Navbar() {
           <div className="relative flex items-center">
             <input
               type="text"
-              placeholder="Rechercher à Yaoundé..."
+              placeholder={t('mobile_search_placeholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-8 py-2 bg-[#FAF8F5] border border-[#E7E5E4] rounded-full text-xs text-[#1C1917]"
+              className="w-full pl-9 pr-8 py-2.5 bg-[#FAF8F5] border border-[#E7E5E4] rounded-full text-base sm:text-xs text-[#1C1917] placeholder-[#78716C] focus:outline-none focus:ring-2 focus:ring-[#3A5A40]/30 focus:border-[#3A5A40]"
             />
-            <SearchIcon className="w-3.5 h-3.5 text-[#78716C] absolute left-3 pointer-events-none" />
+            <SearchIcon className="w-4 h-4 text-[#78716C] absolute left-3 pointer-events-none" />
           </div>
         </div>
       </nav>
+
+      {/* Persistent Horizontal Category Navigation Sub-Bar */}
+      <div className="bg-[#FAF8F5] border-b border-[#E7E5E4] py-2 px-4 sm:px-6 lg:px-8 overflow-x-auto scrollbar-none">
+        <div className="max-w-7xl mx-auto flex items-center gap-2 min-w-max">
+          <Link
+            href="/products"
+            className="px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all bg-white text-[#57534E] border border-[#E7E5E4] hover:bg-[#E5EDE6] hover:text-[#1B3A24] hover:border-[#3A5A40] min-h-[36px] flex items-center shadow-xs"
+          >
+            🌿 {t('all_categories')}
+          </Link>
+          {CATEGORIES.map((cat) => (
+            <Link
+              key={cat.id}
+              href={`/products?category=${cat.id}`}
+              className="px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all bg-white text-[#57534E] border border-[#E7E5E4] hover:bg-[#E5EDE6] hover:text-[#1B3A24] hover:border-[#3A5A40] min-h-[36px] flex items-center shadow-xs"
+            >
+              {cat.name}
+            </Link>
+          ))}
+        </div>
+      </div>
     </header>
   );
 }

@@ -350,6 +350,55 @@ export const translations = {
     dashboard_fcfa_price: '{amount} FCFA',
     dashboard_items_count_badge: '{count} articles',
 
+    // Stepper & Card Touch Controls
+    stepper_decrease: 'Diminuer la quantité',
+    stepper_increase: 'Augmenter la quantité',
+    stepper_in_cart: 'Dans le panier',
+    card_pesticide_free: 'Produit 100% Bio & Écologique',
+    card_wishlist: 'Favoris',
+    card_add_to_cart_aria: 'Ajouter {name} au panier',
+
+    // Fulfillment & Store Pickup / Collection Point
+    fulfillment_mode_title: 'Mode de réception',
+    fulfillment_delivery_title: 'Livraison à domicile',
+    fulfillment_delivery_desc: 'Livré par coursier à Yaoundé (Dès 3 000 FCFA)',
+    fulfillment_pickup_title: 'Retrait en boutique (Point de collecte)',
+    fulfillment_pickup_desc: 'Hub Bazar-Bio Bastos (Gratuit • Sans minimum d\'achat)',
+    pickup_store_address: 'Boutique & Hub Bazar-Bio : Carrefour Bastos, face Ambassade, Yaoundé',
+    pickup_store_hours: 'Ouvert du Lundi au Samedi de 08h00 à 18h30',
+    pickup_no_minimum_badge: 'Retrait libre sans montant minimum',
+    pickup_free_badge: 'Gratuit',
+    delivery_min_notice: 'La livraison par coursier à domicile nécessite un panier minimum de 3 000 FCFA.',
+    switch_to_pickup_cta: 'Passer en Retrait Boutique Gratuit',
+    cart_threshold_or_pickup_info: 'Livraison à domicile dès 3 000 FCFA • Ou retrait gratuit en boutique sans minimum',
+    pickup_contact_title: 'Coordonnées de Retrait',
+    delivery_contact_title: 'Adresse de Livraison',
+    pickup_instructions_note: 'Présentez simplement votre numéro WhatsApp ou référence de commande lors de votre passage.',
+
+    // Minimum Order Threshold (3 000 FCFA)
+    min_threshold_warning: 'Commande minimum de {min} FCFA requise pour la livraison à Yaoundé.',
+    min_threshold_progress: 'Ajoutez encore {missing} FCFA pour atteindre le minimum de livraison ({min} FCFA).',
+    min_threshold_reached: '✓ Minimum de commande atteint pour la livraison !',
+
+    // Step 3 Review & Order Summary
+    checkout_step3_delivery_summary_title: 'Détails de Livraison',
+    checkout_step3_customer_label: 'Destinataire',
+    checkout_step3_phone_label: 'Téléphone WhatsApp',
+    checkout_step3_zone_label: 'Quartier de livraison',
+    checkout_step3_address_label: 'Adresse précise / Repères',
+    checkout_step3_slot_label: 'Créneau horaire',
+    checkout_step3_payment_method_label: 'Mode de règlement',
+    checkout_step3_products_title: 'Récapitulatif des Produits',
+    checkout_step3_qty_col: 'Qté',
+    checkout_step3_unit_price: 'Prix unit.',
+    checkout_step3_line_total: 'Total',
+    checkout_step3_edit_step1: 'Modifier les coordonnées',
+    checkout_step3_edit_step2: 'Changer le paiement',
+    checkout_min_order_error: 'Le montant de votre panier est inférieur au minimum requis de 3 000 FCFA.',
+
+    // Category Navigation Sub-bar
+    mobile_search_placeholder: 'Rechercher à Yaoundé...',
+
     // Footer
     trust_badge_1_title: '100% Bio & Saison',
     trust_badge_1_desc: 'Zéro engrais de synthèse, cueilli le matin à Mfou & Obala.',
@@ -366,6 +415,15 @@ export const translations = {
     footer_circuit_court: 'Circuit Court & Agro-écologie',
     footer_mobile_first: 'Mobile-First Yaoundé',
     lang_switch: 'Langue',
+    footer_cat_legumes: 'Légumes & Tubercules Frais',
+    footer_cat_fruits: 'Fruits Tropicaux de Saison',
+    footer_cat_epices: 'Poivre de Penja & Épices Locales',
+    footer_cat_soins: 'Beurres Purs de Karité & Cacao',
+    footer_cat_bijoux: 'Bijoux & Artisanat Bamiléké',
+    footer_deliveries_info: 'Livraisons : Bastos, Odza, Omnisports, Mendong, Melen',
+    footer_packaging_info: 'Emballages : Feuilles de Bananier & Kraft Recyclé',
+    footer_address_yaounde: 'Yaoundé, Région du Centre, Cameroun (Livraisons à domicile)',
+    footer_vendor_partner_link: 'Espace Partenaires & Producteurs (Connexion Vendeur & Admin)',
   },
 
   en: {
@@ -717,6 +775,55 @@ export const translations = {
     dashboard_fcfa_price: '{amount} FCFA',
     dashboard_items_count_badge: '{count} items',
 
+    // Stepper & Card Touch Controls
+    stepper_decrease: 'Decrease quantity',
+    stepper_increase: 'Increase quantity',
+    stepper_in_cart: 'In cart',
+    card_pesticide_free: '100% Organic & Chemical-Free',
+    card_wishlist: 'Wishlist',
+    card_add_to_cart_aria: 'Add {name} to cart',
+
+    // Fulfillment & Store Pickup / Collection Point
+    fulfillment_mode_title: 'Fulfillment Option',
+    fulfillment_delivery_title: 'Home Delivery',
+    fulfillment_delivery_desc: 'Delivered by courier in Yaoundé (Min. 3,000 FCFA)',
+    fulfillment_pickup_title: 'Store Pickup (Collection Point)',
+    fulfillment_pickup_desc: 'Bazar-Bio Bastos Hub (Free • No minimum purchase)',
+    pickup_store_address: 'Bazar-Bio Boutique & Hub: Bastos Junction, opp. Embassy, Yaoundé',
+    pickup_store_hours: 'Open Monday to Saturday from 8:00 AM to 6:30 PM',
+    pickup_no_minimum_badge: 'Free pickup with no minimum amount',
+    pickup_free_badge: 'Free',
+    delivery_min_notice: 'Courier home delivery requires a minimum cart total of 3,000 FCFA.',
+    switch_to_pickup_cta: 'Switch to Free Store Pickup',
+    cart_threshold_or_pickup_info: 'Home delivery from 3,000 FCFA • Or free store pickup with no minimum',
+    pickup_contact_title: 'Pickup Contact Details',
+    delivery_contact_title: 'Delivery Address',
+    pickup_instructions_note: 'Simply present your WhatsApp number or order reference when picking up.',
+
+    // Minimum Order Threshold (3 000 FCFA)
+    min_threshold_warning: 'Minimum order of {min} FCFA required for delivery across Yaoundé.',
+    min_threshold_progress: 'Add {missing} FCFA more to reach the delivery minimum ({min} FCFA).',
+    min_threshold_reached: '✓ Delivery minimum threshold reached!',
+
+    // Step 3 Review & Order Summary
+    checkout_step3_delivery_summary_title: 'Delivery Details',
+    checkout_step3_customer_label: 'Recipient',
+    checkout_step3_phone_label: 'WhatsApp Phone',
+    checkout_step3_zone_label: 'Delivery Neighborhood',
+    checkout_step3_address_label: 'Specific Address / Landmarks',
+    checkout_step3_slot_label: 'Delivery Window',
+    checkout_step3_payment_method_label: 'Payment Method',
+    checkout_step3_products_title: 'Order Items Summary',
+    checkout_step3_qty_col: 'Qty',
+    checkout_step3_unit_price: 'Unit price',
+    checkout_step3_line_total: 'Total',
+    checkout_step3_edit_step1: 'Edit coordinates',
+    checkout_step3_edit_step2: 'Change payment',
+    checkout_min_order_error: 'Your cart total is below the required minimum of 3,000 FCFA.',
+
+    // Category Navigation Sub-bar
+    mobile_search_placeholder: 'Search in Yaoundé...',
+
     // Footer
     trust_badge_1_title: '100% Bio & Seasonal',
     trust_badge_1_desc: 'Zero synthetic fertilizers, harvested fresh in Mfou & Obala.',
@@ -733,6 +840,15 @@ export const translations = {
     footer_circuit_court: 'Short Circuits & Agro-ecology',
     footer_mobile_first: 'Mobile-First Yaoundé',
     lang_switch: 'Language',
+    footer_cat_legumes: 'Fresh Vegetables & Tubers',
+    footer_cat_fruits: 'Seasonal Tropical Fruits',
+    footer_cat_epices: 'Penja Pepper & Local Spices',
+    footer_cat_soins: 'Pure Shea & Cocoa Butters',
+    footer_cat_bijoux: 'Handcrafted Bamiléké Jewelry',
+    footer_deliveries_info: 'Deliveries: Bastos, Odza, Omnisports, Mendong, Melen',
+    footer_packaging_info: 'Packaging: Banana Leaves & Recycled Kraft',
+    footer_address_yaounde: 'Yaoundé, Centre Region, Cameroon (Home delivery)',
+    footer_vendor_partner_link: 'Partners & Producers Hub (Vendor & Admin Login)',
   },
 } as const;
 

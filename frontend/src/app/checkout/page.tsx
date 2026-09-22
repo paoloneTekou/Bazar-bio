@@ -15,7 +15,10 @@ import {
   SparklesIcon,
   TagIcon,
   ClockIcon,
+  Edit3Icon,
+  MapPinIcon,
 } from '@/components/ui/Icons';
+import { SafeImage } from '@/components/ui/SafeImage';
 
 export default function CheckoutPage() {
   const { cartItems, cartTotal, cartImpact, clearCart } = useCart();
@@ -25,6 +28,11 @@ export default function CheckoutPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
 
+  // Fulfillment mode: 'delivery' (Home Delivery, min 3 000 FCFA) vs 'pickup' (Store Collection Hub Bastos, free, no minimum)
+  const [fulfillmentType, setFulfillmentType] = useState<'delivery' | 'pickup'>(
+    cartTotal < 3000 ? 'pickup' : 'delivery'
+  );
+
   // Form states
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -32,7 +40,7 @@ export default function CheckoutPage() {
   const [city, setCity] = useState('Yaoundé');
   const [postalCode, setPostalCode] = useState('');
   const [phone, setPhone] = useState('');
-  const [selectedZoneId, setSelectedZoneId] = useState(DELIVERY_ZONES[0].id);
+  const [selectedZoneId, setSelectedZoneId] = useState(DELIVERY_ZONES[1]?.id || DELIVERY_ZONES[0].id);
   const [deliveryTimeSlot, setDeliveryTimeSlot] = useState<'morning' | 'afternoon'>('morning');
   const [whatsappOptIn, setWhatsappOptIn] = useState(true);
 
@@ -57,15 +65,31 @@ export default function CheckoutPage() {
       const liveZones = await getDeliveryZones();
       if (liveZones && liveZones.length > 0) {
         setZones(liveZones);
-        setSelectedZoneId(liveZones[0].id);
+        const firstDeliveryZone = liveZones.find((z) => z.fee > 0 && !z.name.toLowerCase().includes('retrait'));
+        if (firstDeliveryZone) {
+          setSelectedZoneId(firstDeliveryZone.id);
+        } else {
+          setSelectedZoneId(liveZones[0].id);
+        }
       }
     }
     loadZones();
   }, []);
 
-  const selectedZone = zones.find((z) => String(z.id) === String(selectedZoneId)) || zones[0] || DELIVERY_ZONES[0];
+  const pickupZone = zones.find(
+    (z) => z.fee === 0 || z.id === 'zone-pickup-bastos' || z.name.toLowerCase().includes('retrait')
+  ) || DELIVERY_ZONES[0];
+
+  const deliveryZones = zones.filter(
+    (z) => z.fee > 0 && !z.name.toLowerCase().includes('retrait') && z.id !== 'zone-pickup-bastos'
+  );
+
+  const activeDeliveryZone = deliveryZones.find((z) => String(z.id) === String(selectedZoneId)) || deliveryZones[0] || zones[0] || DELIVERY_ZONES[0];
+
+  const effectiveZone = fulfillmentType === 'pickup' ? pickupZone : activeDeliveryZone;
+  const shippingFee = fulfillmentType === 'pickup' ? 0 : effectiveZone.fee;
   const couponDiscount = appliedCoupon ? appliedCoupon.calculated_discount : 0;
-  const finalTotal = Math.max(cartTotal - couponDiscount, 0) + (selectedZone ? selectedZone.fee : 1500);
+  const finalTotal = Math.max(cartTotal - couponDiscount, 0) + shippingFee;
 
   const handleApplyCoupon = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -93,9 +117,20 @@ export default function CheckoutPage() {
 
   const handleProceedToPayment = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!firstName || !phone || !address) {
-      alert(t('checkout_fill_required_alert'));
-      return;
+    if (fulfillmentType === 'delivery') {
+      if (cartTotal < 3000) {
+        alert(t('delivery_min_notice'));
+        return;
+      }
+      if (!firstName || !phone || !address) {
+        alert(t('checkout_fill_required_alert'));
+        return;
+      }
+    } else {
+      if (!firstName || !phone) {
+        alert(t('checkout_fill_required_alert'));
+        return;
+      }
     }
     setCurrentStep(2);
   };
@@ -126,13 +161,16 @@ export default function CheckoutPage() {
       order: {
         customer_name: `${firstName} ${lastName}`.trim(),
         customer_phone: phone,
-        delivery_zone_id: selectedZoneId,
-        delivery_address_details: `${address}, ${city} ${postalCode}`.trim(),
+        delivery_zone_id: effectiveZone.id,
+        delivery_address_details: fulfillmentType === 'pickup'
+          ? (address.trim() ? `Retrait boutique: ${address}` : 'Retrait en Boutique / Point de Collecte (Hub Bastos)')
+          : `${address}, ${city} ${postalCode}`.trim(),
         delivery_time_slot: deliveryTimeSlot,
         payment_method_code: paymentMethodCode,
         customer_notes: '',
         coupon_code: appliedCoupon?.code,
         whatsapp_opt_in: whatsappOptIn,
+        fulfillment_type: fulfillmentType,
       },
       coupon_code: appliedCoupon?.code,
       items: itemsPayload,
@@ -163,12 +201,14 @@ export default function CheckoutPage() {
 
     const slotLabel = deliveryTimeSlot === 'afternoon' ? t('delivery_slot_afternoon') : t('delivery_slot_morning');
     const discountText = appliedCoupon ? `\n🏷️ Code: ${appliedCoupon.code} (-${couponDiscount} FCFA)` : '';
+    const fulfillmentText = fulfillmentType === 'pickup'
+      ? `🏬 *Mode :* Retrait en Boutique (Hub Bastos - Gratuit)\n📍 *Lieu de Retrait :* Carrefour Bastos, face Ambassade, Yaoundé`
+      : `🚚 *Mode :* Livraison à Domicile\n📍 *Quartier :* ${effectiveZone.name}\n🏠 *Adresse :* ${address}, ${city}`;
 
     const message = `🌿 *COMMANDE BAZAR-BIO*\n` +
       `Référence : *${orderReference}*\n` +
       `Client : ${firstName} ${lastName} (${phone})\n` +
-      `Quartier : ${selectedZone.name}\n` +
-      `Adresse : ${address}, ${city}\n` +
+      `${fulfillmentText}\n` +
       `Créneau : ${slotLabel}${discountText}\n` +
       `Total à payer : *${finalTotal.toLocaleString()} FCFA*\n\n` +
       `🌱 *Impact :* ${cartImpact.totalPlasticGrams}g plastique économisé, ${cartImpact.totalCo2Kg}kg CO₂ épargné.`;
@@ -255,9 +295,101 @@ export default function CheckoutPage() {
             </p>
           </div>
 
+          {/* Fulfillment Option Selector (Home Delivery vs Free Store Pickup) */}
+          <div className="space-y-3">
+            <label className="text-xs sm:text-sm font-semibold text-[#1C1917] block">
+              {t('fulfillment_mode_title')}
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* Pickup Option */}
+              <button
+                type="button"
+                onClick={() => setFulfillmentType('pickup')}
+                className={`p-4 rounded-2xl border text-left transition-all min-h-[72px] flex flex-col justify-between cursor-pointer ${
+                  fulfillmentType === 'pickup'
+                    ? 'bg-[#E5EDE6] border-[#3A5A40] text-[#1B3A24] ring-2 ring-[#3A5A40]/30 shadow-xs'
+                    : 'bg-[#FAF8F5] border-[#E7E5E4] text-[#57534E] hover:bg-white'
+                }`}
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="font-bold text-xs sm:text-sm flex items-center gap-1.5">
+                    <span className="text-base">🏬</span>
+                    <span>{t('fulfillment_pickup_title')}</span>
+                  </div>
+                  {fulfillmentType === 'pickup' && <CheckIcon className="w-4 h-4 text-[#3A5A40] shrink-0 mt-0.5" />}
+                </div>
+                <p className="text-[11px] text-[#57534E] mt-1.5 leading-relaxed">
+                  {t('fulfillment_pickup_desc')}
+                </p>
+                <div className="mt-2.5 flex items-center gap-1.5 flex-wrap">
+                  <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-[#3A5A40] text-white">
+                    {t('pickup_free_badge')}
+                  </span>
+                  <span className="text-[10px] font-semibold text-[#3A5A40] bg-white px-2 py-0.5 rounded-full border border-[#C9DBCB]">
+                    {t('pickup_no_minimum_badge')}
+                  </span>
+                </div>
+              </button>
+
+              {/* Delivery Option */}
+              <button
+                type="button"
+                onClick={() => setFulfillmentType('delivery')}
+                className={`p-4 rounded-2xl border text-left transition-all min-h-[72px] flex flex-col justify-between cursor-pointer ${
+                  fulfillmentType === 'delivery'
+                    ? 'bg-[#E5EDE6] border-[#3A5A40] text-[#1B3A24] ring-2 ring-[#3A5A40]/30 shadow-xs'
+                    : 'bg-[#FAF8F5] border-[#E7E5E4] text-[#57534E] hover:bg-white'
+                }`}
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="font-bold text-xs sm:text-sm flex items-center gap-1.5">
+                    <span className="text-base">🚚</span>
+                    <span>{t('fulfillment_delivery_title')}</span>
+                  </div>
+                  {fulfillmentType === 'delivery' && <CheckIcon className="w-4 h-4 text-[#3A5A40] shrink-0 mt-0.5" />}
+                </div>
+                <p className="text-[11px] text-[#57534E] mt-1.5 leading-relaxed">
+                  {t('fulfillment_delivery_desc')}
+                </p>
+                <div className="mt-2.5 flex items-center gap-2">
+                  <span className="text-[10px] font-semibold text-[#78716C] bg-white px-2 py-0.5 rounded-full border border-[#E7E5E4]">
+                    1 000 - 2 000 FCFA
+                  </span>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          {/* Alert if Delivery is selected but Cart < 3000 FCFA */}
+          {fulfillmentType === 'delivery' && cartTotal < 3000 && (
+            <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl text-xs text-amber-900 space-y-2.5 animate-in fade-in">
+              <div className="flex items-start gap-2">
+                <span className="text-lg leading-none shrink-0">⚠️</span>
+                <div>
+                  <strong className="block font-bold">{t('delivery_min_notice')}</strong>
+                  <p className="text-[11px] text-amber-800 mt-0.5">
+                    {t('min_threshold_progress', {
+                      missing: (3000 - cartTotal).toLocaleString(),
+                      min: '3 000',
+                    })}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setFulfillmentType('pickup')}
+                className="w-full py-2.5 px-3 bg-[#3A5A40] hover:bg-[#2D4732] text-white font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-2 min-h-[44px] cursor-pointer"
+              >
+                <span>🏬</span>
+                <span>{t('switch_to_pickup_cta')}</span>
+              </button>
+            </div>
+          )}
+
+          {/* Customer Name Fields */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-[#1C1917]">{t('first_name_label')}</label>
+              <label className="text-xs font-semibold text-[#1C1917]">{t('first_name_label')} *</label>
               <input
                 type="text"
                 required
@@ -280,49 +412,75 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-[#1C1917]">{t('checkout_address_label')}</label>
-            <input
-              type="text"
-              required
-              placeholder={t('checkout_address_placeholder')}
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              className="w-full px-4 py-3.5 bg-white border border-[#E7E5E4] rounded-xl text-base text-[#1C1917] placeholder-[#A8A29E] focus:outline-none focus:ring-2 focus:ring-[#3A5A40]/30 focus:border-[#3A5A40]"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-[#1C1917]">{t('checkout_city_zone_label')}</label>
-              <select
-                value={selectedZoneId}
-                onChange={(e) => {
-                  setSelectedZoneId(e.target.value);
-                  const z = zones.find((item) => String(item.id) === String(e.target.value));
-                  if (z) setCity(z.name);
-                }}
-                className="w-full px-4 py-3.5 bg-white border border-[#E7E5E4] rounded-xl text-base text-[#1C1917] focus:outline-none focus:ring-2 focus:ring-[#3A5A40]/30 focus:border-[#3A5A40]"
-              >
-                {zones.map((zone) => (
-                  <option key={zone.id} value={zone.id}>
-                    {zone.name} (+{zone.fee.toLocaleString()} FCFA)
-                  </option>
-                ))}
-              </select>
+          {/* Store Pickup Hub Info Card */}
+          {fulfillmentType === 'pickup' && (
+            <div className="p-4 sm:p-5 bg-[#FAF8F5] border border-[#C9DBCB] rounded-2xl space-y-2 text-xs animate-in fade-in">
+              <div className="flex items-center gap-2 font-bold text-sm text-[#1B3A24]">
+                <MapPinIcon className="w-4 h-4 text-[#3A5A40] shrink-0" />
+                <span>{t('fulfillment_pickup_title')}</span>
+              </div>
+              <p className="text-[#1C1917] font-medium leading-relaxed">
+                📍 {t('pickup_store_address')}
+              </p>
+              <p className="text-[#57534E]">
+                🕒 {t('pickup_store_hours')}
+              </p>
+              <p className="text-[11px] text-[#3A5A40] font-medium pt-1">
+                💡 {t('pickup_instructions_note')}
+              </p>
             </div>
+          )}
 
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-[#1C1917]">{t('checkout_postal_label')}</label>
-              <input
-                type="text"
-                placeholder={t('checkout_postal_placeholder')}
-                value={postalCode}
-                onChange={(e) => setPostalCode(e.target.value)}
-                className="w-full px-4 py-3.5 bg-white border border-[#E7E5E4] rounded-xl text-base text-[#1C1917] placeholder-[#A8A29E] focus:outline-none focus:ring-2 focus:ring-[#3A5A40]/30 focus:border-[#3A5A40]"
-              />
+          {/* Delivery Address Fields */}
+          {fulfillmentType === 'delivery' && (
+            <div className="space-y-4 animate-in fade-in">
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-[#1C1917]">
+                  {t('checkout_address_label')} *
+                </label>
+                <input
+                  type="text"
+                  required={fulfillmentType === 'delivery'}
+                  placeholder={t('checkout_address_placeholder')}
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  className="w-full px-4 py-3.5 bg-white border border-[#E7E5E4] rounded-xl text-base text-[#1C1917] placeholder-[#A8A29E] focus:outline-none focus:ring-2 focus:ring-[#3A5A40]/30 focus:border-[#3A5A40]"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-[#1C1917]">{t('checkout_city_zone_label')}</label>
+                  <select
+                    value={selectedZoneId}
+                    onChange={(e) => {
+                      setSelectedZoneId(e.target.value);
+                      const z = zones.find((item) => String(item.id) === String(e.target.value));
+                      if (z) setCity(z.name);
+                    }}
+                    className="w-full px-4 py-3.5 bg-white border border-[#E7E5E4] rounded-xl text-base text-[#1C1917] focus:outline-none focus:ring-2 focus:ring-[#3A5A40]/30 focus:border-[#3A5A40]"
+                  >
+                    {deliveryZones.map((zone) => (
+                      <option key={zone.id} value={zone.id}>
+                        {zone.name} (+{zone.fee.toLocaleString()} FCFA)
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-[#1C1917]">{t('checkout_postal_label')}</label>
+                  <input
+                    type="text"
+                    placeholder={t('checkout_postal_placeholder')}
+                    value={postalCode}
+                    onChange={(e) => setPostalCode(e.target.value)}
+                    className="w-full px-4 py-3.5 bg-white border border-[#E7E5E4] rounded-xl text-base text-[#1C1917] placeholder-[#A8A29E] focus:outline-none focus:ring-2 focus:ring-[#3A5A40]/30 focus:border-[#3A5A40]"
+                  />
+                </div>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Delivery Time Slot Selector */}
           <div className="space-y-2 pt-1">
@@ -578,9 +736,164 @@ export default function CheckoutPage() {
               {t('checkout_confirm_title_heading')}
             </h2>
             <p className="text-xs text-[#78716C] mt-1">
-              {t('checkout_delivery_step_summary')} : {selectedZone.name} • {deliveryTimeSlot === 'afternoon' ? t('delivery_slot_afternoon') : t('delivery_slot_morning')}
+              {t('checkout_delivery_step_summary')} : {fulfillmentType === 'pickup' ? t('fulfillment_pickup_title') : effectiveZone.name} • {deliveryTimeSlot === 'afternoon' ? t('delivery_slot_afternoon') : t('delivery_slot_morning')}
             </p>
           </div>
+
+          {/* Detailed Delivery & Coordinates Recap */}
+          <div className="bg-[#FAF8F5] p-5 sm:p-6 rounded-2xl border border-[#E7E5E4] space-y-4">
+            <div className="flex items-center justify-between border-b border-[#E7E5E4] pb-3">
+              <h3 className="font-serif-title font-bold text-base sm:text-lg text-[#1B3A24] flex items-center gap-2">
+                <MapPinIcon className="w-4 h-4 text-[#3A5A40]" />
+                <span>{fulfillmentType === 'pickup' ? t('fulfillment_pickup_title') : t('checkout_step3_delivery_summary_title')}</span>
+              </h3>
+              <button
+                type="button"
+                onClick={() => setCurrentStep(1)}
+                className="text-xs font-semibold text-[#3A5A40] hover:underline flex items-center gap-1 min-h-[44px]"
+              >
+                <Edit3Icon className="w-3.5 h-3.5" />
+                <span>{t('checkout_step3_edit_step1')}</span>
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              <div>
+                <span className="text-[#78716C] block">{t('checkout_step3_customer_label')} :</span>
+                <span className="font-bold text-[#1C1917]">{firstName} {lastName}</span>
+              </div>
+
+              <div>
+                <span className="text-[#78716C] block">{t('checkout_step3_phone_label')} :</span>
+                <span className="font-bold text-[#1C1917]">{phone}</span>
+              </div>
+
+              <div>
+                <span className="text-[#78716C] block">{fulfillmentType === 'pickup' ? t('fulfillment_mode_title') : t('checkout_step3_zone_label')} :</span>
+                <span className="font-bold text-[#1C1917]">
+                  {fulfillmentType === 'pickup' ? `${t('fulfillment_pickup_title')} (0 FCFA)` : `${effectiveZone.name} (+${effectiveZone.fee.toLocaleString()} FCFA)`}
+                </span>
+              </div>
+
+              <div>
+                <span className="text-[#78716C] block">{t('checkout_step3_slot_label')} :</span>
+                <span className="font-bold text-[#1C1917]">
+                  {deliveryTimeSlot === 'afternoon' ? t('delivery_slot_afternoon') : t('delivery_slot_morning')}
+                </span>
+              </div>
+
+              <div className="sm:col-span-2">
+                <span className="text-[#78716C] block">{fulfillmentType === 'pickup' ? t('pickup_contact_title') : t('checkout_step3_address_label')} :</span>
+                <span className="font-semibold text-[#1C1917]">
+                  {fulfillmentType === 'pickup' ? t('pickup_store_address') : `${address}, ${city} ${postalCode}`}
+                </span>
+              </div>
+
+              <div className="sm:col-span-2 pt-2 border-t border-[#E7E5E4] flex items-center justify-between">
+                <div>
+                  <span className="text-[#78716C] block">{t('checkout_step3_payment_method_label')} :</span>
+                  <span className="font-bold text-[#1C1917]">
+                    {paymentType === 'momo'
+                      ? t('checkout_method_momo')
+                      : paymentType === 'om'
+                      ? t('checkout_method_om')
+                      : paymentType === 'cod'
+                      ? t('checkout_method_cod')
+                      : t('checkout_method_card')}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setCurrentStep(2)}
+                  className="text-xs font-semibold text-[#3A5A40] hover:underline flex items-center gap-1 min-h-[44px]"
+                >
+                  <Edit3Icon className="w-3.5 h-3.5" />
+                  <span>{t('checkout_step3_edit_step2')}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Itemized Order Products Review */}
+          <div className="bg-white rounded-2xl border border-[#E7E5E4] overflow-hidden">
+            <div className="p-4 bg-[#FAF8F5] border-b border-[#E7E5E4] flex items-center justify-between">
+              <h3 className="font-serif-title font-bold text-base text-[#1B3A24]">
+                {t('checkout_step3_products_title')} ({cartItems.length})
+              </h3>
+              <Link
+                href="/cart"
+                className="text-xs font-semibold text-[#3A5A40] hover:underline"
+              >
+                {t('cart_drawer_view_details')}
+              </Link>
+            </div>
+
+            <div className="divide-y divide-[#F5F5F4] p-1">
+              {cartItems.map((item) => {
+                const lineTotal = item.isSubscription
+                  ? item.product.price * item.quantity * 0.9
+                  : item.product.price * item.quantity;
+
+                return (
+                  <div key={item.product.id} className="p-3 flex items-center justify-between gap-3 text-xs">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-12 h-12 rounded-lg overflow-hidden bg-[#FAF8F5] shrink-0 border border-[#E7E5E4]">
+                        <SafeImage
+                          src={item.product.imageUrl}
+                          alt={item.product.name}
+                          category={item.product.categoryId}
+                          fallbackType={item.product.name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div className="min-w-0">
+                        <h4 className="font-semibold text-sm text-[#1C1917] truncate">{item.product.name}</h4>
+                        <span className="text-[#78716C] text-[11px] block">
+                          {item.product.price.toLocaleString()} FCFA / {item.product.unitAbbr}
+                          {item.isSubscription && <span className="text-[#3A5A40] font-bold ml-1.5">(-10%)</span>}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="text-right shrink-0">
+                      <span className="font-bold text-[#1C1917] block">
+                        {lineTotal.toLocaleString()} FCFA
+                      </span>
+                      <span className="text-[11px] text-[#78716C]">
+                        {t('checkout_step3_qty_col')} : {item.quantity} {item.product.unitAbbr}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Minimum Spend Alert strictly for courier Home Delivery */}
+          {fulfillmentType === 'delivery' && cartTotal < 3000 && (
+            <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl text-xs text-amber-800 flex items-start gap-2">
+              <span className="text-base leading-none">⚠️</span>
+              <div>
+                <strong className="block font-bold">{t('checkout_min_order_error')}</strong>
+                <p className="mt-0.5">
+                  {t('min_threshold_progress', {
+                    missing: (3000 - cartTotal).toLocaleString(),
+                    min: '3 000',
+                  })}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFulfillmentType('pickup');
+                    setCurrentStep(1);
+                  }}
+                  className="mt-2 text-xs font-semibold text-[#3A5A40] underline block cursor-pointer"
+                >
+                  {t('switch_to_pickup_cta')}
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Promotional Coupon Input Box */}
           <div className="p-4 sm:p-5 bg-[#FAF8F5] rounded-2xl border border-[#E7E5E4] space-y-3">
@@ -680,8 +993,8 @@ export default function CheckoutPage() {
             )}
 
             <div className="flex justify-between text-[#78716C]">
-              <span>{t('cart_shipping_row')} ({selectedZone.name})</span>
-              <span>+{selectedZone.fee.toLocaleString()} FCFA</span>
+              <span>{fulfillmentType === 'pickup' ? t('fulfillment_pickup_title') : `${t('cart_shipping_row')} (${effectiveZone.name})`}</span>
+              <span>{fulfillmentType === 'pickup' ? t('pickup_free_badge') : `+${effectiveZone.fee.toLocaleString()} FCFA`}</span>
             </div>
 
             <div className="border-t border-[#E7E5E4] pt-2 flex justify-between items-baseline">
@@ -794,8 +1107,8 @@ export default function CheckoutPage() {
               <button
                 type="button"
                 onClick={handleConfirmOrder}
-                disabled={isSubmitting}
-                className="py-3.5 px-4 rounded-xl bg-[#3A5A40] hover:bg-[#2D4732] text-white font-bold text-xs transition-all shadow-md active:scale-[0.99] text-center min-h-[44px]"
+                disabled={isSubmitting || (fulfillmentType === 'delivery' && cartTotal < 3000)}
+                className="py-3.5 px-4 rounded-xl bg-[#3A5A40] hover:bg-[#2D4732] disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-xs transition-all shadow-md active:scale-[0.99] text-center min-h-[44px]"
               >
                 {isSubmitting ? t('checkout_placing_order_btn') : t('checkout_place_order_btn')}
               </button>

@@ -420,6 +420,7 @@ export const PRODUCTS: Product[] = [
 ];
 
 export const DELIVERY_ZONES: DeliveryZone[] = [
+  { id: 'zone-pickup-bastos', name: 'Point de Retrait - Boutique Bazar-Bio (Bastos)', city: 'Yaoundé', fee: 0, estimatedDeliveryHours: 'Prêt en 1h (Gratuit)' },
   { id: 'zone-bastos', name: 'Bastos', city: 'Yaoundé', fee: 1500, estimatedDeliveryHours: '1h30 - 2h30' },
   { id: 'zone-omnisports', name: 'Omnisports / Essos', city: 'Yaoundé', fee: 1200, estimatedDeliveryHours: '1h00 - 2h00' },
   { id: 'zone-odza', name: 'Odza / Tropicana', city: 'Yaoundé', fee: 2000, estimatedDeliveryHours: '2h00 - 3h00' },

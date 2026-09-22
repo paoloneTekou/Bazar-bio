@@ -76,27 +76,27 @@ export function Footer() {
             <ul className="space-y-2.5 text-xs text-[#C9DBCB]">
               <li>
                 <Link href="/products?category=cat-legumes" className="hover:text-white transition-colors">
-                  Légumes & Tubercules Frais
+                  {t('footer_cat_legumes')}
                 </Link>
               </li>
               <li>
                 <Link href="/products?category=cat-fruits" className="hover:text-white transition-colors">
-                  Fruits Tropicaux de Saison
+                  {t('footer_cat_fruits')}
                 </Link>
               </li>
               <li>
                 <Link href="/products?category=cat-epices" className="hover:text-white transition-colors">
-                  Poivre de Penja & Épices Locales
+                  {t('footer_cat_epices')}
                 </Link>
               </li>
               <li>
                 <Link href="/products?category=cat-soins" className="hover:text-white transition-colors">
-                  Beurres Purs de Karité & Cacao
+                  {t('footer_cat_soins')}
                 </Link>
               </li>
               <li>
                 <Link href="/products?category=cat-bijoux" className="hover:text-white transition-colors">
-                  Bijoux & Artisanat Bamiléké
+                  {t('footer_cat_bijoux')}
                 </Link>
               </li>
             </ul>
@@ -115,14 +115,14 @@ export function Footer() {
               </li>
               <li>
                 <Link href="/admin" className="hover:text-white transition-colors">
-                  {t('nav_vendor')}
+                  {t('footer_vendor_partner_link')}
                 </Link>
               </li>
               <li>
-                <span className="text-[#A3C0A6]">Livraisons : Bastos, Odza, Omnisports, Mendong</span>
+                <span className="text-[#A3C0A6]">{t('footer_deliveries_info')}</span>
               </li>
               <li>
-                <span className="text-[#A3C0A6]">Emballages : Feuilles de Bananier & Kraft</span>
+                <span className="text-[#A3C0A6]">{t('footer_packaging_info')}</span>
               </li>
             </ul>
           </div>
@@ -135,7 +135,7 @@ export function Footer() {
             <ul className="space-y-3 text-xs text-[#C9DBCB]">
               <li className="flex items-start gap-2.5">
                 <MapPinIcon className="w-4 h-4 text-[#789F7D] shrink-0 mt-0.5" />
-                <span>Yaoundé, Région du Centre, Cameroun (Livraisons à domicile)</span>
+                <span>{t('footer_address_yaounde')}</span>
               </li>
               <li className="flex items-center gap-2.5">
                 <PhoneIcon className="w-4 h-4 text-[#789F7D] shrink-0" />

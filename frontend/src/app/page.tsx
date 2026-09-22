@@ -1,8 +1,10 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { CATEGORIES, PRODUCTS, ARTISANS, IMPACT_GLOBAL_STATS } from '@/lib/data';
+import { CATEGORIES as INITIAL_CATEGORIES, PRODUCTS as INITIAL_PRODUCTS, ARTISANS, IMPACT_GLOBAL_STATS } from '@/lib/data';
+import { getProducts, getCategories } from '@/lib/api';
+import { Product, Category } from '@/types';
 import { ProductCard } from '@/components/products/ProductCard';
 import { SafeImage } from '@/components/ui/SafeImage';
 import { useLanguage } from '@/context/LanguageContext';
@@ -19,7 +21,28 @@ import {
 
 export default function HomePage() {
   const { t } = useLanguage();
-  const featuredProducts = PRODUCTS.slice(0, 4);
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>(INITIAL_PRODUCTS.slice(0, 4));
+  const [categoriesList, setCategoriesList] = useState<Category[]>(INITIAL_CATEGORIES);
+
+  useEffect(() => {
+    async function loadLiveContent() {
+      try {
+        const [liveProducts, liveCategories] = await Promise.all([
+          getProducts(),
+          getCategories(),
+        ]);
+        if (liveProducts && liveProducts.length > 0) {
+          setFeaturedProducts(liveProducts.slice(0, 4));
+        }
+        if (liveCategories && liveCategories.length > 0) {
+          setCategoriesList(liveCategories);
+        }
+      } catch (err) {
+        console.warn('Could not load live homepage products/categories:', err);
+      }
+    }
+    loadLiveContent();
+  }, []);
 
   return (
     <div className="space-y-16 sm:space-y-24 pb-20">
@@ -130,7 +153,7 @@ export default function HomePage() {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          {CATEGORIES.map((category) => (
+          {categoriesList.map((category) => (
             <Link
               key={category.id}
               href={`/products?category=${category.id}`}

@@ -28,6 +28,14 @@ module Api
           delivery_slot = "morning"
         end
 
+        fulfillment_type = order_params[:fulfillment_type].presence || "delivery"
+        is_pickup = fulfillment_type == "pickup" ||
+                    delivery_zone.delivery_fee.to_f == 0.0 ||
+                    delivery_zone.name.downcase.include?("retrait") ||
+                    delivery_zone.name.downcase.include?("pickup")
+
+        applied_delivery_fee = is_pickup ? 0.0 : delivery_zone.delivery_fee.to_f
+
         order = nil
         subtotal = 0.0
         products_to_decrement = []
@@ -38,13 +46,13 @@ module Api
             customer_phone: order_params[:customer_phone],
             customer_email: order_params[:customer_email],
             delivery_zone: delivery_zone,
-            delivery_address_details: order_params[:delivery_address_details] || "Livraison directe",
+            delivery_address_details: is_pickup ? "Retrait en Boutique / Point de collecte (Hub Bastos)" : (order_params[:delivery_address_details].presence || "Livraison directe"),
             payment_method: payment_method,
             order_status: order_status,
             customer_notes: order_params[:customer_notes],
             delivery_time_slot: delivery_slot,
             whatsapp_opt_in: order_params[:whatsapp_opt_in].nil? ? true : order_params[:whatsapp_opt_in],
-            delivery_fee: delivery_zone.delivery_fee,
+            delivery_fee: applied_delivery_fee,
             subtotal: 0,
             discount_amount: 0,
             total_amount: 0
@@ -82,9 +90,9 @@ module Api
             products_to_decrement << [product, qty]
           end
 
-          # Minimum order threshold verification (3 000 FCFA)
-          if subtotal < MIN_ORDER_AMOUNT
-            raise OrderProcessingError, "Le montant minimum de commande est de #{MIN_ORDER_AMOUNT.to_i} FCFA pour assurer la viabilité de la livraison (sous-total actuel : #{subtotal.to_i} FCFA)."
+          # Minimum order threshold verification (3 000 FCFA applies strictly to courier Home Delivery)
+          if !is_pickup && subtotal < MIN_ORDER_AMOUNT
+            raise OrderProcessingError, "Le montant minimum de commande est de #{MIN_ORDER_AMOUNT.to_i} FCFA pour la livraison à domicile (sous-total actuel : #{subtotal.to_i} FCFA). Vous pouvez opter pour le retrait gratuit en boutique / point de collecte."
           end
 
           # Coupon validation and calculation
@@ -104,7 +112,8 @@ module Api
           end
 
           order.subtotal = subtotal
-          order.total_amount = [subtotal - order.discount_amount, 0].max + delivery_zone.delivery_fee
+          order.delivery_fee = applied_delivery_fee
+          order.total_amount = [subtotal - order.discount_amount, 0].max + applied_delivery_fee
 
           order.save!
 
@@ -199,7 +208,8 @@ module Api
           :payment_method_code,
           :customer_notes,
           :coupon_code,
-          :whatsapp_opt_in
+          :whatsapp_opt_in,
+          :fulfillment_type
         )
       end
 
@@ -216,22 +226,42 @@ module Api
                           ""
                         end
 
+        is_pickup = order.delivery_fee.to_f == 0.0 ||
+                    order.delivery_zone.delivery_fee.to_f == 0.0 ||
+                    order.delivery_zone.name.downcase.include?("retrait") ||
+                    order.delivery_zone.name.downcase.include?("pickup")
+
+        reception_block = if is_pickup
+                            <<~REC.strip
+                              🏬 *Mode:* Retrait en boutique / Point de collecte
+                              📍 *Point de Retrait:* Hub Bazar-Bio (Carrefour Bastos, Yaoundé)
+                              ⏰ *Créneau de retrait:* #{slot_label}
+                            REC
+                          else
+                            <<~REC.strip
+                              🚚 *Mode:* Livraison à domicile par coursier
+                              📍 *Quartier:* #{order.delivery_zone.name}
+                              🏡 *Adresse/Repères:* #{order.delivery_address_details}
+                              ⏰ *Créneau de livraison:* #{slot_label}
+                            REC
+                          end
+
+        delivery_line = is_pickup ? "🚚 *Livraison:* 0 FCFA (Retrait gratuit sur place)" : "🚚 *Livraison:* #{order.delivery_fee.to_i} FCFA"
+
         <<~TEXT.strip
           🌿 *NOUVELLE COMMANDE BAZAR-BIO* 🌿
           -----------------------------------
           📋 *Réf:* #{order.order_reference}
           👤 *Nom:* #{order.customer_name}
           📞 *Tél:* #{order.customer_phone}
-          📍 *Quartier:* #{order.delivery_zone.name}
-          🏡 *Adresse/Repères:* #{order.delivery_address_details}
-          ⏰ *Créneau de livraison:* #{slot_label}
+          #{reception_block}
 
           🛒 *ARTICLES:*
           #{items_summary}
 
           -----------------------------------
           💵 *Sous-total:* #{order.subtotal.to_i} FCFA
-          #{discount_line}🚚 *Livraison:* #{order.delivery_fee.to_i} FCFA
+          #{discount_line}#{delivery_line}
           💰 *TOTAL À PAYER:* #{order.total_amount.to_i} FCFA
           💳 *Mode de paiement:* #{order.payment_method.name}
 

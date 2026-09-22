@@ -24,6 +24,7 @@ yaounde = City.find_or_create_by!(region: centre, name: "Yaoundé")
 
 # 3. Delivery Zones (Yaoundé Neighborhoods)
 delivery_zones_data = [
+  { name: "Point de Retrait - Boutique Bazar-Bio (Bastos)", fee: 0.00 },
   { name: "Bastos", fee: 1500.00 },
   { name: "Odza", fee: 2000.00 },
   { name: "Omnisports", fee: 1200.00 },

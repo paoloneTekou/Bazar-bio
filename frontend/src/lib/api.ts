@@ -222,6 +222,7 @@ export interface CreateOrderPayload {
     customer_notes?: string;
     coupon_code?: string;
     whatsapp_opt_in?: boolean;
+    fulfillment_type?: 'delivery' | 'pickup';
   };
   coupon_code?: string;
   items: {

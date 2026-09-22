@@ -208,6 +208,36 @@ export function CartDrawer() {
                 </div>
               </div>
 
+              {/* Minimum Order Threshold (3 000 FCFA) Progress Meter */}
+              <div className="p-3 bg-[#FAF8F5] rounded-xl border border-[#E7E5E4] space-y-1.5">
+                <div className="flex items-center justify-between text-[11px]">
+                  <span className={`font-semibold ${cartSubtotal >= 3000 ? 'text-[#2D4732]' : 'text-[#854D0E]'}`}>
+                    {cartSubtotal >= 3000
+                      ? t('min_threshold_reached')
+                      : t('min_threshold_progress', {
+                          missing: (3000 - cartSubtotal).toLocaleString(),
+                          min: '3 000',
+                        })}
+                  </span>
+                  <span className="font-bold text-[10px] text-[#78716C]">
+                    {Math.min(Math.round((cartSubtotal / 3000) * 100), 100)}%
+                  </span>
+                </div>
+                <div className="w-full h-1.5 rounded-full bg-[#E5EDE6] overflow-hidden">
+                  <div
+                    className={`h-full rounded-full transition-all duration-500 ${
+                      cartSubtotal >= 3000 ? 'bg-[#25D366]' : 'bg-[#EAB308]'
+                    }`}
+                    style={{ width: `${Math.min((cartSubtotal / 3000) * 100, 100)}%` }}
+                  />
+                </div>
+                {cartSubtotal < 3000 && (
+                  <p className="text-[10px] sm:text-[11px] text-[#3A5A40] font-medium pt-1">
+                    🏬 {t('cart_threshold_or_pickup_info')}
+                  </p>
+                )}
+              </div>
+
               <p className="text-[11px] text-[#78716C] text-center">
                 {t('cart_drawer_delivery_calc_info')}
               </p>
@@ -223,7 +253,7 @@ export function CartDrawer() {
                 <Link
                   href="/checkout"
                   onClick={() => setIsCartOpen(false)}
-                  className="py-3 px-4 rounded-xl bg-[#3A5A40] hover:bg-[#2D4732] text-white text-xs font-semibold text-center flex items-center justify-center gap-1.5 transition-colors shadow-xs min-h-[44px]"
+                  className="py-3 px-4 rounded-xl text-xs font-semibold text-center flex items-center justify-center gap-1.5 transition-colors shadow-xs min-h-[44px] bg-[#3A5A40] hover:bg-[#2D4732] text-white"
                 >
                   <span>{t('cart_drawer_order_cta')}</span>
                   <ArrowRightIcon className="w-3.5 h-3.5" />
